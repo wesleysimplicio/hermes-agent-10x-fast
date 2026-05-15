@@ -63,32 +63,15 @@ Full PR documentation:
 
 ### Visual Before/After Gallery
 
-Every image below is tagged and tied to a measured old-vs-new comparison. The
-generated PNGs are visual summaries, but the table still pins each one to the
-specific benchmark claim it represents.
+![GPT-image generated Hermes Agent 100X Fast before/after hero](docs/assets/100x-fast/generated/gpt-image-100x-hero-before-after.png)
 
-`#startup` `#tool-schema` `#plugin-discovery` `#sqlite` `#runtime`
-`#delegation` `#parallel-tools` `#mcp` `#research-to-code`
+![GPT-image generated Hermes 100X Fast runtime stack](docs/assets/100x-fast/generated/gpt-image-100x-runtime-stack.png)
 
-| Visual | Tags | Old | New | Gain |
-| --- | --- | ---: | ---: | ---: |
-| <img src="docs/assets/100x-fast/generated/gpt-image-100x-hero-before-after.png" width="320" alt="GPT image generated premium before after comparison for Hermes Agent 100X Fast"> | `#gpt-image-2` `#hero` `#before-after` | repeated waits and slow probes | cached, batched, parallel runtime | **up to 1378x** |
-| <img src="docs/assets/100x-fast/generated/gpt-image-100x-runtime-stack.png" width="320" alt="GPT image generated runtime stack comparison with five measured optimization lanes"> | `#gpt-image-2` `#runtime-stack` `#technical` | network probes, row writes, serial waits | disk cache, batch writes, fast-fail, parallel tools | **2x-1378x by lane** |
-| <img src="docs/assets/100x-fast/generated/gpt-image-100x-video-cover.png" width="320" alt="GPT image generated video cover for Hermes Agent 100X Fast measured hot path gains"> | `#gpt-image-2` `#video-cover` `#promo` | baseline hot paths | 100X Fast track | **up to 1378x** |
-| <img src="docs/assets/100x-fast/generated/macro-original-vs-100x-fast.png" width="320" alt="macro comparison original vs 100X Fast branch showing speed gains across startup plugin discovery sqlite endpoint guard and parallel tools"> | `#macro` `#promo` `#overview` `#generated` | original branch across six criteria | 100X Fast branch across six criteria | **up to 24.21x** |
-| <img src="docs/assets/100x-fast/perf-startup-model-tools.svg" width="320" alt="model_tools startup old 2.0847s new 0.8419s gain 2.48x"> | `#startup` `#model-tools` | 2.0847s | 0.8419s | **2.48x** |
-| <img src="docs/assets/100x-fast/perf-tool-definitions-startup.svg" width="320" alt="tool definitions startup old 1.8782s new 0.8741s gain 2.15x"> | `#startup` `#tool-schema` | 1.8782s | 0.8741s | **2.15x** |
-| <img src="docs/assets/100x-fast/perf-plugin-discovery.svg" width="320" alt="plugin discovery old 0.5571s new 0.1930s gain 2.89x"> | `#plugin-discovery` `#startup` | 0.5571s | 0.1930s | **2.89x** |
-| <img src="docs/assets/100x-fast/perf-session-batch-writes.svg" width="320" alt="SQLite session writes old 0.6329s new 0.0240s gain 24.21x"> | `#sqlite` `#session-db` | 0.6329s | 0.0240s | **24.21x** |
-| <img src="docs/assets/100x-fast/runtime-local-endpoint-fast-path.svg" width="320" alt="dead local endpoint old 51.4181s new 5.5563s gain 9.25x"> | `#runtime` `#local-endpoint` | 51.4181s | 5.5563s | **9.25x** |
-| <img src="docs/assets/100x-fast/runtime-openrouter-metadata-cache.svg" width="320" alt="OpenRouter model metadata cold process old network timeout path 10 seconds new disk cache 0.0073 seconds gain up to 1378x"> | `#runtime` `#metadata` `#offline-cache` | up to 10.0000s | 0.0073s | **up to 1378x** |
-| <img src="docs/assets/100x-fast/phase-7-delegate-parallel-guard.svg" width="320" alt="parallel guard old 6.9878s new 1.6403s gain 4.26x"> | `#delegation` `#parallel-tools` | 6.9878s | 1.6403s | **4.26x** |
-| <img src="docs/assets/100x-fast/runtime-benchmark-suite.svg" width="320" alt="runtime benchmark suite showing gains up to 22.10x"> | `#runtime` `#benchmark-suite` | mixed hot paths | latest medians | **up to 22.10x** |
-| <img src="docs/assets/100x-fast/generated/parallel-runtime.png" width="320" alt="parallel runtime generated comparison old 0.3036s new 0.0590s gain 5.14x"> | `#parallel-tools` `#generated` | 0.3036s | 0.0590s | **5.14x** |
-| <img src="docs/assets/100x-fast/generated/runtime-before-after.png" width="320" alt="runtime before after generated comparison old 51.4181s new 5.5563s gain 9.25x"> | `#runtime` `#generated` | 51.4181s | 5.5563s | **9.25x** |
-| <img src="docs/assets/100x-fast/generated/runtime-before-after-alt.png" width="320" alt="runtime before after alternate generated comparison old 51.4181s new 5.5563s gain 9.25x"> | `#runtime` `#generated` | 51.4181s | 5.5563s | **9.25x** |
-| <img src="docs/assets/100x-fast/generated/research-to-code.png" width="320" alt="research to code visual mapping cache batch route and fast fail ideas to measured gains"> | `#research-to-code` `#systems` | repeated probes/work | cache, batch, route, fast-fail | **up to 24.21x** |
-| <img src="docs/assets/100x-fast/hermes-agent-100x-fast-phase-1.png" width="320" alt="generated 100X Fast overview visual with measured gains up to 24.21x"> | `#overview` `#generated` | baseline hot paths | optimized hot paths | **up to 24.21x** |
+![GPT-image generated Hermes Agent 100X Fast video cover](docs/assets/100x-fast/generated/gpt-image-100x-video-cover.png)
+
+![Hermes Agent 100X Fast macro comparison](docs/assets/100x-fast/generated/macro-original-vs-100x-fast.png)
+
+![Hermes Agent 100X Fast performance dashboard](docs/assets/100x-fast/perf-summary-dashboard.svg)
 
 ### Startup And Tool Schema
 

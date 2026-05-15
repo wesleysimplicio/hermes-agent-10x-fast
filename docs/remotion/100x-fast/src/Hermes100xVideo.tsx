@@ -12,10 +12,10 @@ import {
 } from 'remotion';
 
 const metrics = [
-  {label: 'Metadata cache', old: '10.0000s probe', value: '0.0073s disk hit', gain: 'up to 1378x', color: '#33d69f'},
-  {label: 'Session writes', old: 'row-by-row flush', value: 'batch transaction', gain: '24.8x', color: '#ffd166'},
+  {label: 'Metadata cache', old: 'network probe', value: '0.4211s / 100 lookups', gain: 'cache-first', color: '#33d69f'},
+  {label: 'Session writes', old: 'row-by-row flush', value: 'batch transaction', gain: '37.74x', color: '#ffd166'},
   {label: 'Endpoint startup', old: 'HTTP timeout loop', value: 'TCP fast-fail', gain: '9.25x', color: '#4cc9f0'},
-  {label: 'Parallel tools', old: 'serial I/O wait', value: 'safe concurrent batch', gain: '5.55x', color: '#b8f7ff'},
+  {label: 'Parallel tools', old: 'serial I/O wait', value: 'safe concurrent batch', gain: '5.20x', color: '#b8f7ff'},
   {label: 'Startup discovery', old: 'repeat scans/imports', value: 'fingerprint caches', gain: '2-3x', color: '#8de35a'},
 ];
 
@@ -157,7 +157,7 @@ const SceneIntro: React.FC = () => {
         subtitle="Before vs after: less repeated work, fewer dead probes, safer parallelism, and cache-first runtime paths."
       />
       <div style={{position: 'absolute', left: 96, bottom: 90, display: 'flex', gap: 18}}>
-        {['1378x metadata', '24.8x writes', '9.25x startup', '5.55x tools', '2-3x discovery'].map((item) => (
+        {['0.4211s metadata', '37.74x writes', '9.25x startup', '5.20x tools', '2-3x discovery'].map((item) => (
           <div
             key={item}
             style={{
