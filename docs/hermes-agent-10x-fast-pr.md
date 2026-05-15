@@ -2,6 +2,9 @@
 
 Date: 2026-05-15
 
+Upstream-ready PR body:
+`docs/hermes-performance-upstream-pr.md`
+
 This PR is the first concrete performance pass from
 `docs/performance-pr-candidates-2026-05-15.md`. The headline result is a
 ~2.15x faster cold `model_tools` import plus tool-schema startup path on this
