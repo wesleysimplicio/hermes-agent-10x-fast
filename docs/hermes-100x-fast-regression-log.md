@@ -564,3 +564,31 @@ python -m pytest tests\hermes_cli\test_setup.py tests\hermes_cli\test_setup_irc.
 ```
 
 Result: `73 passed, 1 skipped, 2 warnings`.
+
+## CI Follow-Up: Systemd Node Path Permission Guard
+
+Date: 2026-05-15
+
+The next upstream `test` run reduced the residual failures to two systemd unit
+tests. Both failed when `shutil.which("node")` inspected an inaccessible
+`/root/.hermes/.../node/bin` PATH entry while generating a service for another
+target user.
+
+Implemented follow-up:
+
+- Wrapped Node binary discovery in `generate_systemd_unit()` and the gateway
+  restart/install path so inaccessible PATH entries are treated the same as
+  missing Node.
+- The generated unit still includes project-local `node_modules/.bin`, venv
+  paths, target-user local bin paths, and common system paths.
+
+Validation:
+
+```powershell
+python -m py_compile hermes_cli\gateway.py
+```
+
+Result: passed.
+
+Local note: the exact Linux systemd tests are skipped on this Windows runner,
+so the fix is validated by compile locally and the next Linux CI run.

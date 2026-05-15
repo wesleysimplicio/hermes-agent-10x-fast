@@ -2121,7 +2121,10 @@ def generate_systemd_unit(system: bool = False, run_as_user: str | None = None) 
     node_bin = str(PROJECT_ROOT / "node_modules" / ".bin")
 
     path_entries = [venv_bin, node_bin]
-    resolved_node = shutil.which("node")
+    try:
+        resolved_node = shutil.which("node")
+    except OSError:
+        resolved_node = None
     if resolved_node:
         resolved_node_dir = str(Path(resolved_node).resolve().parent)
         if resolved_node_dir not in path_entries:
@@ -2769,7 +2772,10 @@ def generate_launchd_plist() -> str:
     # Resolve the directory containing the node binary (e.g. Homebrew, nvm)
     # so it's explicitly in PATH even if the user's shell PATH changes later.
     priority_dirs = [venv_bin, node_bin]
-    resolved_node = shutil.which("node")
+    try:
+        resolved_node = shutil.which("node")
+    except OSError:
+        resolved_node = None
     if resolved_node:
         resolved_node_dir = str(Path(resolved_node).resolve().parent)
         if resolved_node_dir not in priority_dirs:
