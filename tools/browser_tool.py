@@ -437,19 +437,35 @@ def _managed_browser_gateway_possible() -> bool:
         return False
 
 
+def BrowserbaseProvider():
+    from tools.browser_providers.browserbase import BrowserbaseProvider as _Provider
+
+    return _Provider()
+
+
+def BrowserUseProvider():
+    from tools.browser_providers.browser_use import BrowserUseProvider as _Provider
+
+    return _Provider()
+
+
+def FirecrawlProvider():
+    from tools.browser_providers.firecrawl import FirecrawlProvider as _Provider
+
+    return _Provider()
+
+
+_PROVIDER_REGISTRY = {
+    "browserbase": lambda: BrowserbaseProvider(),
+    "browser-use": lambda: BrowserUseProvider(),
+    "firecrawl": lambda: FirecrawlProvider(),
+}
+
+
 def _new_cloud_provider(provider_key: str) -> Optional[Any]:
-    if provider_key == "browserbase":
-        from tools.browser_providers.browserbase import BrowserbaseProvider
-
-        return BrowserbaseProvider()
-    if provider_key == "browser-use":
-        from tools.browser_providers.browser_use import BrowserUseProvider
-
-        return BrowserUseProvider()
-    if provider_key == "firecrawl":
-        from tools.browser_providers.firecrawl import FirecrawlProvider
-
-        return FirecrawlProvider()
+    factory = _PROVIDER_REGISTRY.get(provider_key)
+    if factory is not None:
+        return factory()
     return None
 
 
@@ -511,13 +527,20 @@ def _get_cloud_provider() -> Optional[Any]:
     if resolved is None and not provider_key:
         # Prefer Browser Use (managed Nous gateway or direct API key),
         # fall back to Browserbase (direct credentials only).
-        if _browser_use_direct_config_possible(browser_cfg) or _managed_browser_gateway_possible():
+        try:
             fallback_provider = _new_cloud_provider("browser-use")
-            if fallback_provider is not None and fallback_provider.is_configured():
-                resolved = fallback_provider
+        except Exception as exc:
+            logger.debug("Browser Use provider auto-detect unavailable: %s", exc)
+            fallback_provider = None
+        if fallback_provider is not None and fallback_provider.is_configured():
+            resolved = fallback_provider
 
-        if resolved is None and _browserbase_direct_config_possible():
-            fallback_provider = _new_cloud_provider("browserbase")
+        if resolved is None:
+            try:
+                fallback_provider = _new_cloud_provider("browserbase")
+            except Exception as exc:
+                logger.debug("Browserbase provider auto-detect unavailable: %s", exc)
+                fallback_provider = None
             if fallback_provider is not None and fallback_provider.is_configured():
                 resolved = fallback_provider
 

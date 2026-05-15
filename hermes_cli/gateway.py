@@ -3682,7 +3682,9 @@ def _all_platforms() -> list[dict]:
     platforms = [dict(p) for p in _PLATFORMS]
 
     # Drop platforms that can't function on this host. See docstring.
-    if sys.platform == "win32":
+    import platform as _platform
+
+    if sys.platform == "win32" and _platform.system().lower() == "windows":
         platforms = [p for p in platforms if p.get("key") != "matrix"]
 
     by_key = {p["key"]: p for p in platforms}

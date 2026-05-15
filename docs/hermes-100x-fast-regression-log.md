@@ -424,3 +424,78 @@ python -m pytest tests\e2e -q
 ```
 
 Result: `56 passed, 7 skipped`.
+
+## CI Follow-Up: Setup, Browser Cloud, and Provider Parity
+
+Date: 2026-05-15
+
+After the Discord fix, the GitHub Actions `test` job exposed thirteen focused
+failures outside the runtime parallelism changes:
+
+- setup/gateway tests tried to enter an interactive checklist in captured CI
+  output or misread plugin-disabled platforms as configured;
+- browser cloud provider cache tests expected monkeypatchable provider
+  factories;
+- Nous provider-parity tests instantiated an empty model and should not probe
+  a live endpoint for minimum-context validation;
+- transcription dotenv fallback tests were revalidated as part of the same
+  failure batch.
+
+Implemented follow-up:
+
+- `setup_gateway()` now continues past an empty checklist when configured
+  platforms were pre-selected, avoiding captured-stdin prompts while preserving
+  the existing user configuration path.
+- Gateway migration summaries now distinguish real user configuration from
+  `plugin disabled` sentinels, and they still recognise built-in platform env
+  markers such as Matrix even when the local setup menu hides that platform on
+  Windows.
+- `tools/browser_tool.py` restores small provider factory wrappers plus a
+  registry so tests and plugins can monkeypatch provider construction without
+  importing optional provider packages eagerly.
+- Browser cloud auto-detection now attempts Browser Use and Browserbase
+  providers directly and only caches a positive configured provider.
+- `get_model_context_length()` returns the default fallback context for an
+  empty model string instead of probing a configured provider endpoint.
+
+Validation:
+
+```powershell
+python -m py_compile tools\browser_tool.py agent\model_metadata.py hermes_cli\setup.py hermes_cli\gateway.py
+```
+
+Result: passed.
+
+```powershell
+python -m pytest tests\tools\test_browser_cloud_provider_cache.py tests\tools\test_browser_cloud_fallback.py -q
+```
+
+Result: `14 passed`.
+
+```powershell
+python -m pytest tests\run_agent\test_provider_parity.py::TestDeveloperRoleSwap::test_developer_role_via_nous_portal tests\run_agent\test_provider_parity.py::TestBuildApiKwargsNousPortal::test_includes_nous_product_tags tests\run_agent\test_provider_parity.py::TestBuildApiKwargsNousPortal::test_uses_chat_completions_format -q
+```
+
+Result: `3 passed`.
+
+```powershell
+python -m pytest tests\tools\test_transcription_dotenv_fallback.py -q
+```
+
+Result: `9 passed`.
+
+```powershell
+python -m pytest tests\hermes_cli\test_setup.py tests\hermes_cli\test_setup_irc.py tests\hermes_cli\test_setup_openclaw_migration.py -q
+```
+
+Result: `60 passed, 2 warnings`.
+
+```powershell
+python -m pytest tests\run_agent\test_provider_parity.py tests\tools\test_transcription_dotenv_fallback.py tests\tools\test_browser_cloud_provider_cache.py tests\tools\test_browser_cloud_fallback.py -q
+```
+
+Result: `116 passed`.
+
+Operational note: `codex exec --enable goals` was attempted for this cycle, but
+the local Codex CLI reported a usage-limit error. Work continued locally with
+the same staged objective loop.

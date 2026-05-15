@@ -1658,6 +1658,9 @@ def get_model_context_length(
     if config_context_length is not None and isinstance(config_context_length, int) and config_context_length > 0:
         return config_context_length
 
+    if not model:
+        return DEFAULT_FALLBACK_CONTEXT
+
     # 0b. custom_providers per-model override — check before any probe.
     # This closes the gap where /model switch and display paths used to fall
     # back to 128K despite the user having a per-model context_length set.

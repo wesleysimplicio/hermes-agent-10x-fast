@@ -2484,7 +2484,7 @@ def setup_gateway(config: dict):
 
     selected = prompt_checklist("Select platforms to configure:", items, pre_selected)
 
-    if not selected:
+    if not selected and not pre_selected:
         print_info("No platforms selected. Run 'hermes setup gateway' later to configure.")
         return
 
@@ -2790,6 +2790,14 @@ def _gateway_platform_short_label(label: str) -> str:
     return base or label
 
 
+def _gateway_status_has_user_config(status: str) -> bool:
+    """Return whether a gateway status indicates user-supplied setup state."""
+    if not status:
+        return False
+    s = status.lower()
+    return s != "not configured" and not s.startswith("plugin disabled")
+
+
 def _get_section_config_summary(config: dict, section_key: str) -> Optional[str]:
     """Return a short summary if a setup section is already configured, else None.
 
@@ -2816,15 +2824,18 @@ def _get_section_config_summary(config: dict, section_key: str) -> Optional[str]
         return f"max turns: {max_turns}"
 
     elif section_key == "gateway":
-        from hermes_cli.gateway import _all_platforms, _platform_status
-        # Count any non-empty status other than the "not configured" sentinel —
+        from hermes_cli.gateway import _PLATFORMS, _all_platforms, _platform_status
+        # Count any user-configured status other than the empty sentinels —
         # platforms like WhatsApp ("enabled, not paired"), Matrix ("configured
         # + E2EE"), and Signal ("partially configured") all indicate the user
         # has already started setup and we shouldn't force the section to rerun.
+        platforms = {plat["key"]: plat for plat in _all_platforms()}
+        for plat in _PLATFORMS:
+            platforms.setdefault(plat["key"], plat)
         configured = [
             _gateway_platform_short_label(plat["label"])
-            for plat in _all_platforms()
-            if _platform_status(plat) and _platform_status(plat) != "not configured"
+            for plat in platforms.values()
+            if _gateway_status_has_user_config(_platform_status(plat))
         ]
         if configured:
             return ", ".join(configured)
