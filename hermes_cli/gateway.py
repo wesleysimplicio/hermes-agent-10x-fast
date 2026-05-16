@@ -3219,7 +3219,16 @@ def run_gateway(verbose: int = 0, quiet: bool = False, replace: bool = False):
             pass  # best-effort; don't block gateway startup
     
     from gateway.run import start_gateway
-    
+
+    # uvloop: libuv-backed event loop. Drop-in policy install before any
+    # asyncio.run() so all asyncio.* APIs in the gateway use it. Graceful
+    # fallback if uvloop is not installed (Windows / Termux).
+    try:
+        import uvloop  # type: ignore
+        uvloop.install()
+    except Exception:
+        pass
+
     print("┌─────────────────────────────────────────────────────────┐")
     print("│           ⚕ Hermes Gateway Starting...                 │")
     print("├─────────────────────────────────────────────────────────┤")
