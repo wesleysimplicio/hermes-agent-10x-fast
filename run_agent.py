@@ -1157,7 +1157,6 @@ class AIAgent:
         self._base_url_lower = value.lower() if value else ""
         self._base_url_hostname = base_url_hostname(value)
 
-class AIAgent:
     def __init__(self,
         # Context retention enhancements
         conversation_context: dict = None,  # Persistent context dictionary
