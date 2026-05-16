@@ -57,6 +57,15 @@ canonical README images for this branch.
 
 ![GPT-image-2 Hermes Agent 100X Fast video cover](docs/assets/100x-fast/generated/gpt-image-100x-video-cover.png)
 
+### Macro Before / After
+
+Side-by-side end-to-end comparison of the same workload on baseline Hermes
+vs. the 100X Fast branch.
+
+![Macro original vs Hermes Agent 100X Fast](docs/assets/100x-fast/generated/macro-original-vs-100x-fast.png)
+
+![Hermes Agent 100X Fast before/after schematic](docs/assets/hermes-agent-100x-fast-before-after.svg)
+
 ### Launch Video
 
 The MP4 is the narrated release cut with voiceover, music, captions, and motion
@@ -71,6 +80,73 @@ inline, even where embedded MP4 playback is limited.
 
 ![Hermes Agent 100X Fast video poster](docs/assets/100x-fast/video/hermes-100x-fast-poster.png)
 
+### Runtime Architecture
+
+The runtime stack is structured around three reinforcing layers: parallel tool
+execution, a research-to-code translation pipeline, and a before/after view of
+the request lifecycle.
+
+![Parallel runtime — Hermes Agent 100X Fast](docs/assets/100x-fast/generated/parallel-runtime.png)
+
+![Research to code — Hermes Agent 100X Fast](docs/assets/100x-fast/generated/research-to-code.png)
+
+![Runtime before/after — Hermes Agent 100X Fast](docs/assets/100x-fast/generated/runtime-before-after.png)
+
+![Runtime before/after (alternate) — Hermes Agent 100X Fast](docs/assets/100x-fast/generated/runtime-before-after-alt.png)
+
+### Phase-by-Phase Improvements
+
+Each phase is an independently measurable, independently revertable change.
+The diagrams below walk from cold-start discovery down to delegate fan-out.
+
+![Phase 1 — Startup discovery fast path](docs/assets/100x-fast/hermes-agent-100x-fast-phase-1.png)
+
+![Phase 2 — Tool discovery cache](docs/assets/100x-fast/phase-2-tool-discovery-cache.svg)
+
+![Phase 3 — Toolset cache](docs/assets/100x-fast/phase-3-toolset-cache.svg)
+
+![Phase 4 — SQLite batch writes](docs/assets/100x-fast/phase-4-sqlite-batch-writes.svg)
+
+![Phase 5 — TUI MCP fingerprint](docs/assets/100x-fast/phase-5-tui-mcp-fingerprint.svg)
+
+![Phase 6 — Adaptive parallel scan](docs/assets/100x-fast/phase-6-adaptive-parallel-scan.svg)
+
+![Phase 7 — Delegate parallel guard](docs/assets/100x-fast/phase-7-delegate-parallel-guard.svg)
+
+### Performance Deep Dives
+
+Per-subsystem benchmark deltas. Each chart isolates one hot path so the win
+is attributable, not aggregate.
+
+![Startup — model tools](docs/assets/100x-fast/perf-startup-model-tools.svg)
+
+![Plugin discovery](docs/assets/100x-fast/perf-plugin-discovery.svg)
+
+![Tool definitions startup](docs/assets/100x-fast/perf-tool-definitions-startup.svg)
+
+![Toolset cache](docs/assets/100x-fast/perf-toolset-cache.svg)
+
+![MCP reload avoidance](docs/assets/100x-fast/perf-mcp-reload-avoidance.svg)
+
+![SQLite session batch writes](docs/assets/100x-fast/perf-session-batch-writes.svg)
+
+![Adaptive parallel scan](docs/assets/100x-fast/perf-adaptive-parallel-scan.svg)
+
+![Performance summary dashboard](docs/assets/100x-fast/perf-summary-dashboard.svg)
+
+### Research Foundations & Runtime Probes
+
+The 100X campaign is grounded in published efficient-LLM research and
+verified against a reproducible benchmark suite.
+
+![Research principles map](docs/assets/100x-fast/research-principles-map.svg)
+
+![Runtime benchmark suite](docs/assets/100x-fast/runtime-benchmark-suite.svg)
+
+![Runtime — local endpoint fast path](docs/assets/100x-fast/runtime-local-endpoint-fast-path.svg)
+
+![Runtime — OpenRouter metadata cache](docs/assets/100x-fast/runtime-openrouter-metadata-cache.svg)
+
 ### What Changed
 
 The current benchmark story is centered on the paths users feel while sending
@@ -83,9 +159,9 @@ runtime checks:
 - Parallel tools: `5.20x` faster for independent I/O-bound tool batches.
 - Startup discovery: `2x-3x` class improvements from fingerprinted caches and reduced repeated work.
 
-Detailed comparison assets are still kept under `docs/assets/100x-fast/` for
-PR review, but the README now highlights the newest 100X GPT-image-2 campaign
-visuals directly inline.
+All comparison assets live under `docs/assets/100x-fast/` — the README now
+inlines every diagram from that pass directly so the visual story matches the
+code story.
 
 ### Research To Code
 
