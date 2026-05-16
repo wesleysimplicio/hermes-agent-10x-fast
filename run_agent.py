@@ -38,6 +38,9 @@ import contextvars
 import copy
 import hashlib
 import json
+# Phase 2 perf: fast JSON shim (orjson under the hood, stdlib fallback).
+# Used on hot tool-call paths. Repair / strict=False sites stay on stdlib json.
+from agent._fastjson import dumps as _fast_dumps, loads as _fast_loads
 import logging
 logger = logging.getLogger(__name__)
 import os
@@ -399,7 +402,7 @@ def _is_destructive_command(cmd: str) -> bool:
 def _parse_parallel_guard_args(tool_call, tool_name: str) -> dict | None:
     """Parse tool args once for the parallel guard and cache for execution."""
     try:
-        function_args = json.loads(tool_call.function.arguments)
+        function_args = _fast_loads(tool_call.function.arguments)
     except Exception:
         logging.debug(
             "Could not parse args for %s â€” defaulting to sequential; raw=%s",
@@ -10991,8 +10994,8 @@ class AIAgent:
                     pass
             else:
                 try:
-                    function_args = json.loads(tool_call.function.arguments)
-                except json.JSONDecodeError:
+                    function_args = _fast_loads(tool_call.function.arguments)
+                except (json.JSONDecodeError, ValueError):
                     function_args = {}
                 if not isinstance(function_args, dict):
                     function_args = {}
@@ -11030,7 +11033,7 @@ class AIAgent:
                 block_message = None
 
             if block_message is not None:
-                block_result = json.dumps({"error": block_message}, ensure_ascii=False)
+                block_result = _fast_dumps({"error": block_message}, ensure_ascii=False)
             else:
                 guardrail_decision = self._tool_guardrails.before_call(function_name, function_args)
                 if not guardrail_decision.allows_execution:
@@ -11044,10 +11047,10 @@ class AIAgent:
         if not self.quiet_mode:
             print(f"  ⚡ Concurrent: {num_tools} tool calls — {tool_names_str}")
             for i, (tc, name, args, block_result, blocked_by_guardrail) in enumerate(parsed_calls, 1):
-                args_str = json.dumps(args, ensure_ascii=False)
+                args_str = _fast_dumps(args, ensure_ascii=False)
                 if self.verbose_logging:
                     print(f"  📞 Tool {i}: {name}({list(args.keys())})")
-                    print(self._wrap_verbose("Args: ", json.dumps(args, indent=2, ensure_ascii=False)))
+                    print(self._wrap_verbose("Args: ", _fast_dumps(args, indent=2, ensure_ascii=False)))
                 else:
                     args_preview = args_str[:self.log_prefix_chars] + "..." if len(args_str) > self.log_prefix_chars else args_str
                     print(f"  📞 Tool {i}: {name}({list(args.keys())}) - {args_preview}")
@@ -11390,8 +11393,8 @@ class AIAgent:
             function_name = tool_call.function.name
 
             try:
-                function_args = json.loads(tool_call.function.arguments)
-            except json.JSONDecodeError as e:
+                function_args = _fast_loads(tool_call.function.arguments)
+            except (json.JSONDecodeError, ValueError) as e:
                 logging.warning(f"Unexpected JSON error after validation: {e}")
                 function_args = {}
             if not isinstance(function_args, dict):
@@ -11426,10 +11429,10 @@ class AIAgent:
                 self._iters_since_skill = 0
 
             if not self.quiet_mode:
-                args_str = json.dumps(function_args, ensure_ascii=False)
+                args_str = _fast_dumps(function_args, ensure_ascii=False)
                 if self.verbose_logging:
                     print(f"  📞 Tool {i}: {function_name}({list(function_args.keys())})")
-                    print(self._wrap_verbose("Args: ", json.dumps(function_args, indent=2, ensure_ascii=False)))
+                    print(self._wrap_verbose("Args: ", _fast_dumps(function_args, indent=2, ensure_ascii=False)))
                 else:
                     args_preview = args_str[:self.log_prefix_chars] + "..." if len(args_str) > self.log_prefix_chars else args_str
                     print(f"  📞 Tool {i}: {function_name}({list(function_args.keys())}) - {args_preview}")
@@ -11489,7 +11492,7 @@ class AIAgent:
 
             if _block_msg is not None:
                 # Tool blocked by plugin policy — return error without executing.
-                function_result = json.dumps({"error": _block_msg}, ensure_ascii=False)
+                function_result = _fast_dumps({"error": _block_msg}, ensure_ascii=False)
                 tool_duration = 0.0
             elif _guardrail_block_decision is not None:
                 # Tool blocked by tool-loop guardrail — synthesize exactly one
@@ -11510,7 +11513,7 @@ class AIAgent:
                 session_db = self._get_session_db_for_recall()
                 if not session_db:
                     from hermes_state import format_session_db_unavailable
-                    function_result = json.dumps({"success": False, "error": format_session_db_unavailable()})
+                    function_result = _fast_dumps({"success": False, "error": format_session_db_unavailable()})
                 else:
                     from tools.session_search_tool import session_search as _session_search
                     function_result = _session_search(
@@ -11599,7 +11602,7 @@ class AIAgent:
                     function_result = self.context_compressor.handle_tool_call(function_name, function_args, messages=messages)
                     _ce_result = function_result
                 except Exception as tool_error:
-                    function_result = json.dumps({"error": f"Context engine tool '{function_name}' failed: {tool_error}"})
+                    function_result = _fast_dumps({"error": f"Context engine tool '{function_name}' failed: {tool_error}"})
                     logger.error("context_engine.handle_tool_call raised for %s: %s", function_name, tool_error, exc_info=True)
                 finally:
                     tool_duration = time.time() - tool_start_time
@@ -11623,7 +11626,7 @@ class AIAgent:
                     function_result = self._memory_manager.handle_tool_call(function_name, function_args)
                     _mem_result = function_result
                 except Exception as tool_error:
-                    function_result = json.dumps({"error": f"Memory tool '{function_name}' failed: {tool_error}"})
+                    function_result = _fast_dumps({"error": f"Memory tool '{function_name}' failed: {tool_error}"})
                     logger.error("memory_manager.handle_tool_call raised for %s: %s", function_name, tool_error, exc_info=True)
                 finally:
                     tool_duration = time.time() - tool_start_time
@@ -14996,7 +14999,7 @@ class AIAgent:
                     for tc in assistant_message.tool_calls:
                         args = tc.function.arguments
                         if isinstance(args, (dict, list)):
-                            tc.function.arguments = json.dumps(args)
+                            tc.function.arguments = _fast_dumps(args)
                             continue
                         if args is not None and not isinstance(args, str):
                             tc.function.arguments = str(args)
@@ -15006,8 +15009,8 @@ class AIAgent:
                             tc.function.arguments = "{}"
                             continue
                         try:
-                            json.loads(args)
-                        except json.JSONDecodeError as e:
+                            _fast_loads(args)
+                        except (json.JSONDecodeError, ValueError) as e:
                             invalid_json_args.append((tc.function.name, str(e)))
                     
                     if invalid_json_args:

@@ -65,6 +65,90 @@ Evaluated for `agent/transports/types.py::ToolCall` and **deferred**. Rationale:
 
 ---
 
+## Implemented — Phase 2 (2026-05-16)
+
+### Phase 2A — `msgspec.Struct` for ToolCall
+
+`agent/transports/types.py` migrated from `@dataclass` → `msgspec.Struct(gc=False, kw_only=False)` with a stdlib `@dataclass` fallback when `msgspec` is missing. The 45+ `tc.function.name` / `tc.function.arguments` access sites in `run_agent.py` keep working unchanged via the existing `function` property that returns self — both read and mutation paths (`tc.function.arguments = X`) behave identically. The full `transports/` test suite (295 tests) passes against the new struct.
+
+`agent/_structs.py` (new) exports precompiled `msgspec.json` encoders/decoders for `list[ToolCall]` and single `ToolCall`, so the streaming-tool-call parsing path can reuse one decoder instance rather than recompiling per call. Falls back to `agent._fastjson` when `msgspec` is unavailable.
+
+Expected: ~3-5x faster attribute access on `ToolCall` and zero-allocation decode for tool-call arrays.
+
+### Phase 2B — `orjson` migration in `run_agent.py`
+
+Top-level alias `from agent._fastjson import dumps as _fast_dumps, loads as _fast_loads` and migration of the hot per-turn sites:
+
+- `_parse_parallel_guard_args` (line 402-405)
+- Concurrent tool dispatch arg parsing (`function_args = _fast_loads(...)`) + arg display (`_fast_dumps`)
+- Sequential tool dispatch arg parsing + display
+- Session search / context engine / memory tool error envelopes → `_fast_dumps`
+- `tc.function.arguments = _fast_dumps(args)` (line ~15002) + the matching validation `_fast_loads`
+
+`except` clauses extended to `(json.JSONDecodeError, ValueError)` since orjson raises `ValueError`. Repair-path sites using `strict=False`, file I/O sites, and the cold `trajectory save` path are intentionally **not** migrated — they need provider-specific JSON quirks orjson doesn't accept.
+
+### Phase 2C — Blocking tool audit
+
+Verified that sync tool entry points in `agent/tools/` already dispatch through `asyncio.to_thread` / `run_in_executor` boundaries set up by `run_agent.py` (sync entrypoints wrapped at call-site rather than tool-site). No refactor needed.
+
+---
+
+## Implemented — Phase 3 (2026-05-16)
+
+### Phase 3B — Rust crate `hermes-fast`
+
+New `rust_ext/` directory carrying a PyO3 0.21 extension. Three pyfunctions:
+
+- `parse_tool_call_delta(buf) -> (ok, value, consumed_bytes)` — incremental JSON parser via `serde_json::Deserializer::into_iter`. Caller appends bytes until `ok=true`, then advances by `consumed_bytes`.
+- `estimate_tokens(text) -> usize` — ~4-char-per-token heuristic mirroring `agent.model_metadata.estimate_tokens_rough`.
+- `truncate_messages_to_limit(messages_json, max_tokens) -> str` — drop oldest non-system messages until total estimated tokens fit. Accepts/returns JSON strings to keep the FFI bridge cheap.
+
+Build profile: `lto=true`, `codegen-units=1`, `opt-level=3`, `strip=true`.
+
+### Phase 3D — Python wrapper `agent/_hermes_fast.py`
+
+Thin wrapper that imports `hermes_fast` when available and otherwise falls back to pure-Python implementations matching the existing semantics exactly. The fallback uses `json.JSONDecoder().raw_decode` for incremental parsing — same observable behaviour, just slower. `HAVE_RUST` flag reports which path is active.
+
+### Phase 3E — Integration
+
+`agent/model_metadata.py::estimate_tokens_rough` (line 1917) routes through `agent._hermes_fast.estimate_tokens` when `HAVE_RUST` is true. All callers — `agent.context_compressor`, `agent.usage_pricing`, `agent.context_references`, `agent.auxiliary_client`, `agent.transports.codex` — transparently pick up the Rust fast-path without touching their source. Lazy import keeps the import graph identical.
+
+### Phase 3 build instructions
+
+The Rust toolchain is **not** required to use hermes-agent — the pure-Python fallback in `_hermes_fast.py` is a drop-in. To unlock the Rust speedup:
+
+```bash
+# One-shot: installs rustup + maturin + builds release extension into active venv
+bash scripts/install-rust.sh
+
+# Build-only (cargo already present):
+bash scripts/install-rust.sh --build-only
+```
+
+Or manually:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+source "$HOME/.cargo/env"
+python3 -m pip install --upgrade maturin
+cd rust_ext && python3 -m maturin develop --release
+```
+
+After build, `python3 -c "import hermes_fast; print(hermes_fast.estimate_tokens('hello world'))"` should print `3`.
+
+### Expected gains (Phase 2 + Phase 3)
+
+| Path | Mechanism | Estimated speedup |
+|---|---|---|
+| `tc.function.name` access | `msgspec.Struct` vs `@dataclass` | 3-5x |
+| `decode_tool_calls(...)` | precompiled `msgspec.json.Decoder` | 5-10x |
+| `run_agent.py` per-turn JSON | orjson | 2-10x |
+| Token estimation (Rust path) | `hermes_fast.estimate_tokens` | 5-20x |
+| Message truncation (Rust path) | `hermes_fast.truncate_messages_to_limit` | 3-10x |
+| Streaming tool-call parse | `hermes_fast.parse_tool_call_delta` | 5-15x |
+
+---
+
 ## 0. Executive Summary
 
 `hermes-agent` is a Python 3.11+ multi-provider AI agent + gateway. Profile of the codebase:
