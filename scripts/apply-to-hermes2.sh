@@ -22,6 +22,7 @@ rsync -av \
   --exclude='*.pyc' \
   --exclude='node_modules' \
   --exclude='.pytest_cache' \
+  --exclude='rust_ext/target' \
   "$REPO_DIR/" "$TARGET/"
 
 echo "Restarting gateway..."

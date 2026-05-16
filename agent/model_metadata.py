@@ -1920,9 +1920,19 @@ def estimate_tokens_rough(text: str) -> int:
     Uses ceiling division so short texts (1-3 chars) never estimate as
     0 tokens, which would cause the compressor and pre-flight checks to
     systematically undercount when many short tool results are present.
+
+    Phase 3 (perf): routes through the Rust ``hermes_fast`` extension
+    when available; falls back to the pure-Python branch below.
     """
     if not text:
         return 0
+    try:
+        from agent._hermes_fast import HAVE_RUST, estimate_tokens as _fast
+
+        if HAVE_RUST:
+            return _fast(text)
+    except ImportError:
+        pass
     return (len(text) + 3) // 4
 
 
