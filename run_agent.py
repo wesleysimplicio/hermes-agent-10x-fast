@@ -1157,8 +1157,13 @@ class AIAgent:
         self._base_url_lower = value.lower() if value else ""
         self._base_url_hostname = base_url_hostname(value)
 
-    def __init__(
-        self,
+class AIAgent:
+    def __init__(self,
+        # Context retention enhancements
+        conversation_context: dict = None,  # Persistent context dictionary
+        context_ttl: int = 3600,  # 1-hour default retention
+        proactive_check_interval: int = 300,  # 5min proactive checks
+        # Original params below
         base_url: str = None,
         api_key: str = None,
         provider: str = None,
