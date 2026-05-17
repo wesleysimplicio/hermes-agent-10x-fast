@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hermes-agent"
-version = "0.13.0"
+version = "0.13.1"
 description = "The self-improving AI agent — creates skills from experience, improves them during use, and runs anywhere"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -63,6 +63,15 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Phase 1 performance extras: uvloop (libuv event loop), orjson (fast JSON),
+# msgspec (zero-copy decoders). All three are graceful-fallback optional —
+# code paths fall back to stdlib if not installed. Excluded on win32 because
+# uvloop has no Windows wheel.
+perf = [
+  "uvloop==0.22.1; sys_platform != 'win32'",
+  "orjson==3.11.9",
+  "msgspec==0.21.1",
+]
 # Native Anthropic provider — only needed when provider=anthropic (not via
 # OpenRouter or other aggregators).
 anthropic = ["anthropic==0.86.0"]

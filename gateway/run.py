@@ -17039,6 +17039,14 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
 
 def main():
     """CLI entry point for the gateway."""
+    # uvloop: drop-in libuv-backed event loop (20-40% I/O throughput gain).
+    # Graceful fallback on Windows/Termux where uvloop is unavailable.
+    try:
+        import uvloop  # type: ignore
+        uvloop.install()
+    except Exception:
+        pass
+
     # Force UTF-8 stdio on Windows — gateway logs and startup banner would
     # otherwise UnicodeEncodeError on cp1252 consoles.  No-op on POSIX.
     try:

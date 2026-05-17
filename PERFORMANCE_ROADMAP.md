@@ -8,6 +8,63 @@
 
 ---
 
+## Implemented — Phase 1 (2026-05-16)
+
+Drop-in zero-risk wins. All optional with stdlib fallback.
+
+### uvloop (libuv event loop)
+
+Installed as policy before `asyncio.run()` at every CLI entry point:
+
+| Entry point | Function | Location |
+|---|---|---|
+| `hermes2 gateway` | `start_gateway` wrapper | `hermes_cli/gateway.py` (just before line 3286 `asyncio.run`) |
+| `python -m gateway.run` | `main()` | `gateway/run.py` (top of `main`, before stdio config) |
+| `hermes-acp` agent | `main()` | `acp_adapter/entry.py` (just before line 282 `asyncio.run`) |
+
+All three wrap the install in `try/except ImportError` so Windows / Termux installs without uvloop still boot.
+
+Expected: 20-40% I/O throughput gain on the gateway message loop and ACP agent loop.
+
+### orjson (fast JSON)
+
+A thin shim at `agent/_fastjson.py` exposes `loads` / `dumps` with orjson under the hood and stdlib fallback. Migrated hot paths:
+
+| File | Sites | Why hot |
+|---|---|---|
+| `agent/context_compressor.py` | 3 (`_truncate_tool_call_args_json`, `_summarize_tool_result`) | Per-message, runs on every turn that crosses the budget |
+| `agent/tool_result_classification.py` | 1 (`file_mutation_result_landed`) | Per-tool-result, runs on every tool call that returns JSON |
+
+Expected: 2-10x faster decode/encode on those paths. `run_agent.py` migration deferred to Phase 1.5 — many call sites use `strict=False` and `separators=(",", ":")` which orjson does not accept; needs a dedicated audit. `hermes_state.py` deferred similarly: round-trip safety with SQLite-stored JSON columns must be audited before swapping.
+
+### msgspec.Struct
+
+Evaluated for `agent/transports/types.py::ToolCall` and **deferred**. Rationale: 45+ read sites in `run_agent.py` rely on `tc.function.name` / `tc.function.arguments` (back-compat property), plus one mutation site (`tc.function.arguments = json.dumps(args)` near `run_agent.py:14999`). Migrating to `msgspec.Struct` is a Phase 2 task that needs to land alongside an audit of those sites. The dep is installed and ready.
+
+### Scripts
+
+- `scripts/sync-upstream.sh` — safe rebase onto `upstream/main`, takes a snapshot tag before the rebase, prints a post-sync checklist.
+- `scripts/apply-to-hermes2.sh` — rsync the repo into `~/.hermes2/hermes-agent` and `launchctl kickstart` the gateway. One-command deploy from a clean checkout.
+
+### Config
+
+- `.gitattributes` carries `merge=ours` entries for files that must never be overwritten on upstream merge: `hermes_cli/default_soul.py`, `hermes_cli/config.py`, `PERFORMANCE_ROADMAP.md`, both new scripts, `.gitattributes`, `pyproject.toml`, `agent/_fastjson.py`.
+- `git config merge.ours.driver true` activates the driver locally (the sync script sets this idempotently).
+- Upstream remote: `https://github.com/NousResearch/hermes-agent.git`, push URL forced to `no_push` so accidental `git push upstream` is impossible.
+- `pyproject.toml` gains an optional `[perf]` extra: `uvloop`, `orjson`, `msgspec`. `pip install -e '.[perf]'` to enable.
+
+### How to use
+
+```bash
+# Pull upstream updates without losing customizations
+./scripts/sync-upstream.sh
+
+# Deploy current branch into ~/.hermes2/hermes-agent + restart gateway
+./scripts/apply-to-hermes2.sh
+```
+
+---
+
 ## 0. Executive Summary
 
 `hermes-agent` is a Python 3.11+ multi-provider AI agent + gateway. Profile of the codebase:
