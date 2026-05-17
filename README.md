@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/tota-brand/tota-agent-logo.png" alt="Tota Agent by Hermes Agent" width="100%">
+  <img src="docs/assets/tota-brand/tota-agent-vs-openclaw-banner.png" alt="Tota Agent by Hermes Agent versus OpenClaw benchmark banner" width="100%">
 </p>
 
 # Tota Agent
@@ -12,6 +12,10 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
+<p align="center">
+  <strong>Once you're Tota, you'll never be OpenClaw.</strong>
+</p>
+
 **Tota Agent is a Brazilian-fast fork of [Hermes Agent](https://github.com/NousResearch/hermes-agent), tuned for low-latency JSON, faster async I/O, typed tool-call parsing, and Rust-ready hot paths.** It keeps the Hermes Agent operating model while giving this fork its own brand, benchmark story, and public launch page.
 
 The visual identity is inspired by Tota MC's public Brazil-to-US streaming rise: creator energy, Rocinha-to-global momentum, improvised live culture, and cross-language charisma. Public references include the Streamer University coverage by [Times of India](https://timesofindia.indiatimes.com/sports/esports/news/who-is-tota-mc-meet-streamer-universitys-viral-brazilian-star/articleshow/121433457.cms) and the Portuguese profile syndicated by [Rede NXT](https://www.redenxt.com.br/noticia/5281/pop-amp-arte/quem-e-tota-mc-influenciador-da-rocinha-que-vendia-bala-no-sinal-e-hoje-tem-6-milhoes-de-seguidores-com-fas-como-snoop-dogg-e-drake.html). The logo does not use a portrait or imply official endorsement.
@@ -19,6 +23,8 @@ The visual identity is inspired by Tota MC's public Brazil-to-US streaming rise:
 ## Launch Assets
 
 - [Standalone HTML site](tota-agent.html)
+- [Tota vs OpenClaw launch banner PNG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.png)
+- [Tota vs OpenClaw launch banner SVG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.svg)
 - [Updated benchmark PDF](tota_agent_benchmark_report.pdf) - May 17, 2026 launch edition with the new brand, site, visuals, and current `.venv` validation.
 - [SVG logo](docs/assets/tota-brand/tota-agent-logo.svg)
 - [PNG logo](docs/assets/tota-brand/tota-agent-logo.png)
