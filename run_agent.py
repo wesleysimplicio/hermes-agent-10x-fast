@@ -1134,6 +1134,12 @@ def _qwen_portal_headers() -> dict:
     }
 
 
+_TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER = (
+    "[hermes-agent: tool call arguments were corrupted in this session and "
+    "have been dropped to keep the conversation alive. See issue #15236.]"
+)
+
+
 class AIAgent:
     """
     AI Agent with tool calling capabilities.
@@ -1142,10 +1148,7 @@ class AIAgent:
     for AI models that support function calling.
     """
 
-    _TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER = (
-        "[hermes-agent: tool call arguments were corrupted in this session and "
-        "have been dropped to keep the conversation alive. See issue #15236.]"
-    )
+    _TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER = _TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER
 
     @property
     def base_url(self) -> str:
@@ -10464,7 +10467,7 @@ class AIAgent:
             return 0
 
         repaired = 0
-        marker = AIAgent._TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER
+        marker = _TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER
 
         def _prepend_marker(tool_msg: dict) -> None:
             existing = tool_msg.get("content")

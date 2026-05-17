@@ -20,6 +20,8 @@ from __future__ import annotations
 import json
 from typing import Any, Iterable
 
+from agent._fastjson import _fast_dumps, _fast_dumps_bytes, _fast_loads
+
 try:
     import hermes_fast as _rust  # type: ignore
 
@@ -61,30 +63,55 @@ def estimate_tokens(text: str) -> int:
     return (len(text) + 3) // 4
 
 
+def _estimate_tokens_local(text: str) -> int:
+    if not text:
+        return 0
+    return (len(text) + 3) // 4
+
+
+def estimate_tokens_many(texts: Iterable[str]) -> list[int]:
+    """Estimate many strings with one Rust boundary crossing when available."""
+    text_list = [text if isinstance(text, str) else str(text) for text in texts]
+    if _rust is not None:
+        return list(_rust.estimate_tokens_many(text_list))  # type: ignore[attr-defined]
+    return [_estimate_tokens_local(text) for text in text_list]
+
+
 def _py_message_cost(msg: dict[str, Any]) -> int:
     role = msg.get("role", "")
     content = msg.get("content")
-    role_t = estimate_tokens(role) if isinstance(role, str) else 0
+    role_t = _estimate_tokens_local(role) if isinstance(role, str) else 0
     if isinstance(content, str):
-        content_t = estimate_tokens(content)
+        content_t = _estimate_tokens_local(content)
     elif isinstance(content, list):
         content_t = 0
         for item in content:
             if isinstance(item, str):
-                content_t += estimate_tokens(item)
+                content_t += _estimate_tokens_local(item)
             elif isinstance(item, dict):
                 for v in item.values():
                     if isinstance(v, str):
-                        content_t += estimate_tokens(v)
+                        content_t += _estimate_tokens_local(v)
                     else:
-                        content_t += estimate_tokens(json.dumps(v, ensure_ascii=False))
+                        content_t += _estimate_tokens_local(_fast_dumps(v, ensure_ascii=False))
             else:
-                content_t += estimate_tokens(json.dumps(item, ensure_ascii=False))
+                content_t += _estimate_tokens_local(_fast_dumps(item, ensure_ascii=False))
     elif content is None:
         content_t = 0
     else:
-        content_t = estimate_tokens(json.dumps(content, ensure_ascii=False))
+        content_t = _estimate_tokens_local(_fast_dumps(content, ensure_ascii=False))
     return role_t + content_t + 4
+
+
+def estimate_messages_tokens(messages: Iterable[dict[str, Any]]) -> int:
+    """Estimate the total token budget for OpenAI-style message dicts."""
+    msg_list = list(messages)
+    if _rust is not None:
+        encoded = _fast_dumps_bytes(msg_list, ensure_ascii=False)
+        if hasattr(_rust, "estimate_messages_tokens_bytes"):
+            return int(_rust.estimate_messages_tokens_bytes(encoded))  # type: ignore[attr-defined]
+        return int(_rust.estimate_messages_tokens(encoded.decode("utf-8")))  # type: ignore[attr-defined]
+    return sum(_py_message_cost(m) for m in msg_list)
 
 
 def truncate_messages_to_limit(
@@ -97,9 +124,12 @@ def truncate_messages_to_limit(
     """
     msg_list = list(messages)
     if _rust is not None:
-        encoded = json.dumps(msg_list, ensure_ascii=False)
-        out = _rust.truncate_messages_to_limit(encoded, int(max_tokens))  # type: ignore[attr-defined]
-        return json.loads(out)
+        encoded = _fast_dumps_bytes(msg_list, ensure_ascii=False)
+        if hasattr(_rust, "truncate_messages_to_limit_bytes"):
+            out = _rust.truncate_messages_to_limit_bytes(encoded, int(max_tokens))  # type: ignore[attr-defined]
+        else:
+            out = _rust.truncate_messages_to_limit(encoded.decode("utf-8"), int(max_tokens))  # type: ignore[attr-defined]
+        return _fast_loads(out)
 
     costs = [_py_message_cost(m) for m in msg_list]
     total = sum(costs)
@@ -120,6 +150,8 @@ def truncate_messages_to_limit(
 __all__ = [
     "HAVE_RUST",
     "estimate_tokens",
+    "estimate_tokens_many",
+    "estimate_messages_tokens",
     "parse_tool_call_delta",
     "truncate_messages_to_limit",
 ]
