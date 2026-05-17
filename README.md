@@ -19,7 +19,7 @@ The visual identity is inspired by Tota MC's public Brazil-to-US streaming rise:
 ## Launch Assets
 
 - [Standalone HTML site](tota-agent.html)
-- [Full benchmark PDF](tota_agent_benchmark_report.pdf)
+- [Updated benchmark PDF](tota_agent_benchmark_report.pdf) - May 17, 2026 launch edition with the new brand, site, visuals, and current `.venv` validation.
 - [SVG logo](docs/assets/tota-brand/tota-agent-logo.svg)
 - [PNG logo](docs/assets/tota-brand/tota-agent-logo.png)
 - [Open graph image](docs/assets/tota-brand/tota-agent-og.png)
@@ -105,7 +105,7 @@ Details: [docs/tota-benchmark-win-plan.md](docs/tota-benchmark-win-plan.md).
 | Cold start | ~52 ms | ~50 ms | ~280 ms | Tota Agent |
 | RSS memory | ~30 MB | ~30 MB | ~97 MB | Python variants |
 
-Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf), measured on Apple Silicon ARM in May 2026.
+Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf), updated May 17, 2026 with the Tota Agent launch package and current Apple Silicon `.venv` validation.
 
 ## Benchmark Visuals
 
