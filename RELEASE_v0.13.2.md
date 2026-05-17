@@ -21,6 +21,10 @@
 - Hardened `_sanitize_tool_call_arguments()` so it no longer crashes if the
   module-level `AIAgent` binding is replaced by a wrapper, stale class, or test
   double that does not carry the marker attribute.
+- Added `separators=` compatibility to `agent._fastjson.dumps()` and
+  `dumps_bytes()` so guardrail canonicalization can use compact sorted JSON.
+- Replaced a stale downloaded `404: Not Found` load-test file with a valid
+  skipped placeholder so repository-wide lint and test collection can run.
 
 ## Validation
 
@@ -29,3 +33,6 @@
 - `HERMES_TEST_WORKERS=1 scripts/run_tests.sh tests/run_agent/test_tool_call_args_sanitizer.py -q`
 - `HERMES_TEST_WORKERS=1 scripts/run_tests.sh tests/run_agent/test_repair_tool_call_arguments.py tests/run_agent/test_tool_call_args_sanitizer.py -q`
 - `.venv/bin/python -m ruff check run_agent.py tests/run_agent/test_tool_call_args_sanitizer.py`
+- `.venv/bin/python -m ruff check .`
+- `HERMES_TEST_WORKERS=4 scripts/run_tests.sh tests/agent/test_fastjson.py tests/agent/test_tool_guardrails.py tests/run_agent/test_dict_tool_call_args.py tests/run_agent/test_tool_call_args_sanitizer.py tests/run_agent/test_repair_tool_call_arguments.py tests/run_agent/test_streaming_tool_call_repair.py tests/run_agent/test_message_sequence_repair.py tests/run_agent/test_jsondecodeerror_retryable.py -q`
+- `HERMES_TEST_WORKERS=4 scripts/run_tests.sh tests/run_agent -q`

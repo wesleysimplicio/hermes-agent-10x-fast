@@ -19,3 +19,13 @@ def test_dumps_bytes_preserves_supported_json_options():
     assert isinstance(raw, bytes)
     assert b'\n  "a":' in raw
     assert _fastjson.loads(raw) == payload
+
+
+def test_dumps_accepts_compact_separators():
+    payload = {"b": 1, "a": 2}
+
+    text = _fastjson.dumps(payload, sort_keys=True, separators=(",", ":"))
+    raw = _fastjson.dumps_bytes(payload, sort_keys=True, separators=(",", ":"))
+
+    assert text == '{"a":2,"b":1}'
+    assert raw == b'{"a":2,"b":1}'
