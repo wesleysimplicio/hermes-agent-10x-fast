@@ -1,296 +1,232 @@
 <p align="center">
-  <img src="assets/banner.png" alt="Hermes Agent" width="100%">
+  <img src="docs/assets/tota-brand/tota-agent-logo.png" alt="Tota Agent by Hermes Agent" width="100%">
 </p>
 
-# Hermes Agent ☤
+# Tota Agent
 
 <p align="center">
-  <a href="https://hermes-agent.nousresearch.com/docs/"><img src="https://img.shields.io/badge/Docs-hermes--agent.nousresearch.com-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://discord.gg/NousResearch"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/NousResearch/hermes-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
-  <a href="https://nousresearch.com"><img src="https://img.shields.io/badge/Built%20by-Nous%20Research-blueviolet?style=for-the-badge" alt="Built by Nous Research"></a>
-  <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/Lang-中文-red?style=for-the-badge" alt="中文"></a>
+  <a href="tota-agent.html"><img src="https://img.shields.io/badge/Site-tota--agent.html-19D27F?style=for-the-badge" alt="Tota Agent HTML site"></a>
+  <a href="tota_agent_benchmark_report.pdf"><img src="https://img.shields.io/badge/Benchmark-PDF-FFE15A?style=for-the-badge" alt="Benchmark PDF"></a>
+  <a href="https://github.com/wesleysimplicio/tota-agent"><img src="https://img.shields.io/badge/Fork-wesleysimplicio%2Ftota--agent-32B7FF?style=for-the-badge&logo=github" alt="Tota Agent fork"></a>
+  <a href="https://github.com/NousResearch/hermes-agent"><img src="https://img.shields.io/badge/Upstream-Hermes%20Agent-FF5D6C?style=for-the-badge" alt="Hermes Agent upstream"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
-**The self-improving AI agent built by [Nous Research](https://nousresearch.com).** It's the only agent with a built-in learning loop — it creates skills from experience, improves them during use, nudges itself to persist knowledge, searches its own past conversations, and builds a deepening model of who you are across sessions. Run it on a $5 VPS, a GPU cluster, or serverless infrastructure that costs nearly nothing when idle. It's not tied to your laptop — talk to it from Telegram while it works on a cloud VM.
+**Tota Agent is a Brazilian-fast fork of [Hermes Agent](https://github.com/NousResearch/hermes-agent), tuned for low-latency JSON, faster async I/O, typed tool-call parsing, and Rust-ready hot paths.** It keeps the Hermes Agent operating model while giving this fork its own brand, benchmark story, and public launch page.
 
-Use any model you want — [Nous Portal](https://portal.nousresearch.com), [OpenRouter](https://openrouter.ai) (200+ models), [NovitaAI](https://novita.ai) (AI-native cloud for Model API, Agent Sandbox, and GPU Cloud), [NVIDIA NIM](https://build.nvidia.com) (Nemotron), [Xiaomi MiMo](https://platform.xiaomimimo.com), [z.ai/GLM](https://z.ai), [Kimi/Moonshot](https://platform.moonshot.ai), [MiniMax](https://www.minimax.io), [Hugging Face](https://huggingface.co), OpenAI, or your own endpoint. Switch with `hermes model` — no code changes, no lock-in.
+The visual identity is inspired by Tota MC's public Brazil-to-US streaming rise: creator energy, Rocinha-to-global momentum, improvised live culture, and cross-language charisma. Public references include the Streamer University coverage by [Times of India](https://timesofindia.indiatimes.com/sports/esports/news/who-is-tota-mc-meet-streamer-universitys-viral-brazilian-star/articleshow/121433457.cms) and the Portuguese profile syndicated by [Rede NXT](https://www.redenxt.com.br/noticia/5281/pop-amp-arte/quem-e-tota-mc-influenciador-da-rocinha-que-vendia-bala-no-sinal-e-hoje-tem-6-milhoes-de-seguidores-com-fas-como-snoop-dogg-e-drake.html). The logo does not use a portrait or imply official endorsement.
 
-<table>
-<tr><td><b>A real terminal interface</b></td><td>Full TUI with multiline editing, slash-command autocomplete, conversation history, interrupt-and-redirect, and streaming tool output.</td></tr>
-<tr><td><b>Lives where you do</b></td><td>Telegram, Discord, Slack, WhatsApp, Signal, and CLI — all from a single gateway process. Voice memo transcription, cross-platform conversation continuity.</td></tr>
-<tr><td><b>A closed learning loop</b></td><td>Agent-curated memory with periodic nudges. Autonomous skill creation after complex tasks. Skills self-improve during use. FTS5 session search with LLM summarization for cross-session recall. <a href="https://github.com/plastic-labs/honcho">Honcho</a> dialectic user modeling. Compatible with the <a href="https://agentskills.io">agentskills.io</a> open standard.</td></tr>
-<tr><td><b>Scheduled automations</b></td><td>Built-in cron scheduler with delivery to any platform. Daily reports, nightly backups, weekly audits — all in natural language, running unattended.</td></tr>
-<tr><td><b>Delegates and parallelizes</b></td><td>Spawn isolated subagents for parallel workstreams. Write Python scripts that call tools via RPC, collapsing multi-step pipelines into zero-context-cost turns.</td></tr>
-<tr><td><b>Runs anywhere, not just your laptop</b></td><td>Seven terminal backends — local, Docker, SSH, Singularity, Modal, Daytona, and Vercel Sandbox. Daytona and Modal offer serverless persistence — your agent's environment hibernates when idle and wakes on demand, costing nearly nothing between sessions. Run it on a $5 VPS or a GPU cluster.</td></tr>
-<tr><td><b>Research-ready</b></td><td>Batch trajectory generation, trajectory compression for training the next generation of tool-calling models.</td></tr>
-</table>
+## Launch Assets
 
----
+- [Standalone HTML site](tota-agent.html)
+- [Full benchmark PDF](tota_agent_benchmark_report.pdf)
+- [SVG logo](docs/assets/tota-brand/tota-agent-logo.svg)
+- [PNG logo](docs/assets/tota-brand/tota-agent-logo.png)
+- [Open graph image](docs/assets/tota-brand/tota-agent-og.png)
+- [GPT-image-2 emblem source](docs/assets/tota-brand/generated/gpt-image-2-tota-agent-emblem.png)
 
-## Hermes Agent 100X Fast - Performance Comparisons
+## Why Tota Agent
 
-This branch documents a measured performance pass focused on startup hot paths,
-tool discovery, SQLite session persistence, TUI MCP reloads, adaptive
-parallelism, delegation config reuse, parallel guard fast paths, model metadata
-disk caching, and runtime local-endpoint probe avoidance. The numbers below are
-local Windows benchmark results from `scripts/benchmark_startup_perf.py` and
-`scripts/benchmark_runtime_usage.py`; they are measurements for this branch, not
-universal guarantees.
+| Need | Tota Agent answer |
+| --- | --- |
+| Keep Hermes compatibility | Forks Hermes Agent instead of replacing its architecture. |
+| Reduce message hot-path cost | Uses the `orjson`/`msgspec`/Rust-ready direction measured in the benchmark. |
+| Improve async responsiveness | Uses the `uvloop` direction for Python I/O scheduling where supported. |
+| Tell a sharper product story | Adds Tota Agent branding, launch site, and benchmark visuals. |
+| Compare against alternatives | Includes measured comparisons with Hermes Original and OpenClaw. |
 
-Full PR documentation:
+## Install
 
-- [Upstream PR draft](docs/hermes-performance-upstream-pr.md)
-- [100X Fast implementation notes](docs/hermes-agent-100x-fast-pr.md)
-- [Regression log and next-version playbook](docs/hermes-100x-fast-regression-log.md)
-- [Reapply playbook for future Hermes updates](docs/hermes-100x-fast-reapply-playbook.md)
-- [Runtime performance investigation](docs/runtime-performance-investigation-2026-05-15.md)
-
-### 100X Visual Summary
-
-These are the latest GPT-image-2 visuals for the 100X pass. They are the
-canonical README images for this branch.
-
-![GPT-image-2 Hermes Agent 100X Fast before/after hero](docs/assets/100x-fast/generated/gpt-image-100x-hero-before-after.png)
-
-![GPT-image-2 Hermes Agent 100X Fast runtime stack](docs/assets/100x-fast/generated/gpt-image-100x-runtime-stack.png)
-
-![GPT-image-2 Hermes Agent 100X Fast video cover](docs/assets/100x-fast/generated/gpt-image-100x-video-cover.png)
-
-### Launch Video
-
-The MP4 is the narrated release cut with voiceover, music, captions, and motion
-graphics. The GIF preview appears first so the README always shows movement
-inline, even where embedded MP4 playback is limited.
-
-![Hermes Agent 100X Fast launch video animated preview](docs/assets/100x-fast/video/hermes-100x-fast-launch-preview.gif)
-
-<video controls poster="docs/assets/100x-fast/video/hermes-100x-fast-poster.png" width="100%">
-  <source src="docs/assets/100x-fast/video/hermes-100x-fast-launch.mp4" type="video/mp4">
-</video>
-
-![Hermes Agent 100X Fast video poster](docs/assets/100x-fast/video/hermes-100x-fast-poster.png)
-
-### What Changed
-
-The current benchmark story is centered on the paths users feel while sending
-messages, launching tasks, delegating work, and waiting on resource-heavy
-runtime checks:
-
-- Metadata cache: `0.4211s` for 100 lookup resets over 500 models in the local benchmark.
-- Session writes: `37.74x` faster by batching SQLite persistence work.
-- Endpoint startup: `9.25x` faster for dead numeric loopback probe fast-fail.
-- Parallel tools: `5.20x` faster for independent I/O-bound tool batches.
-- Startup discovery: `2x-3x` class improvements from fingerprinted caches and reduced repeated work.
-
-Detailed comparison assets are still kept under `docs/assets/100x-fast/` for
-PR review, but the README now highlights the newest 100X GPT-image-2 campaign
-visuals directly inline.
-
-### Research To Code
-
-This runtime pass cross-checked the official Hermes docs for the
-[agent loop](https://hermes-agent.nousresearch.com/docs/developer-guide/agent-loop/),
-[tools runtime](https://hermes-agent.nousresearch.com/docs/developer-guide/tools-runtime),
-[delegation](https://hermes-agent.nousresearch.com/docs/guides/delegation-patterns/),
-and [context compression](https://hermes-agent.nousresearch.com/docs/developer-guide/context-compression-and-caching/).
-The research logic comes from efficient LLM systems work such as
-[FrugalGPT](https://arxiv.org/abs/2305.05176),
-[LLMLingua](https://arxiv.org/abs/2310.05736),
-[vLLM/PagedAttention](https://arxiv.org/abs/2309.06180), and
-[RouteLLM](https://arxiv.org/abs/2406.18665): route cheap first, compress or
-cache stable work, batch tiny writes, and avoid probes that cannot produce
-signal.
-
----
-
-## Tota Agent Benchmark: Hermes Original vs Tota Agent vs OpenClaw
-
-The visuals below are built from the full benchmark report in
-[tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf). The
-backgrounds were generated with `gpt-image-2`; the benchmark values, axes,
-labels, and score overlays are rendered deterministically from the report data
-so the README images stay visually polished without changing the measured
-numbers.
-
-![GPT-image-2 Tota Agent JSON latency benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-json-latency.png)
-
-![GPT-image-2 Tota Agent memory footprint benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-memory-footprint.png)
-
-![GPT-image-2 Tota Agent message throughput benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-message-throughput.png)
-
-![GPT-image-2 Tota Agent tool call parsing benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-tool-call-parsing.png)
-
-![GPT-image-2 Tota Agent token counting benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-token-counting.png)
-
-![GPT-image-2 Tota Agent async concurrency benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-concurrency-async.png)
-
-![GPT-image-2 Tota Agent startup time benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-startup-time.png)
-
-![GPT-image-2 Tota Agent ecosystem scorecard benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-ecosystem-scorecard.png)
-
----
-
-## Quick Install
-
-### Linux, macOS, WSL2, Termux
+### From GitHub
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
-```
+git clone https://github.com/wesleysimplicio/tota-agent.git
+cd tota-agent
 
-### Windows (native, PowerShell) — Early Beta
-
-> **Heads up:** Native Windows support is **early beta**. It installs and runs, but hasn't been road-tested as broadly as our Linux/macOS/WSL2 paths. Please [file issues](https://github.com/NousResearch/hermes-agent/issues) when you hit rough edges. For the most battle-tested Windows setup today, run the Linux/macOS one-liner above inside **WSL2**.
-
-Run this in PowerShell:
-
-```powershell
-irm https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1 | iex
-```
-
-The installer handles everything: uv, Python 3.11, Node.js, ripgrep, ffmpeg, **and a portable Git Bash** (MinGit, unpacked to `%LOCALAPPDATA%\hermes\git` — no admin required, completely isolated from any system Git install).  Hermes uses this bundled Git Bash to run shell commands.
-
-If you already have Git installed, the installer detects it and uses that instead.  Otherwise a ~45MB MinGit download is all you need — it won't touch or interfere with any system Git.
-
-> **Android / Termux:** The tested manual path is documented in the [Termux guide](https://hermes-agent.nousresearch.com/docs/getting-started/termux). On Termux, Hermes installs a curated `.[termux]` extra because the full `.[all]` extra currently pulls Android-incompatible voice dependencies.
->
-> **Windows:** Native Windows is supported as an **early beta** — the PowerShell one-liner above installs everything, but expect rough edges and please file issues when you hit them. If you'd rather use WSL2 (our most battle-tested Windows path), the Linux command works there too. Native Windows install lives under `%LOCALAPPDATA%\hermes`; WSL2 installs under `~/.hermes` as on Linux.  The only Hermes feature that currently needs WSL2 specifically is the browser-based dashboard chat pane (it uses a POSIX PTY — classic CLI and gateway both run natively).
-
-After installation:
-
-```bash
-source ~/.bashrc    # reload shell (or: source ~/.zshrc)
-hermes              # start chatting!
-```
-
----
-
-## Getting Started
-
-```bash
-hermes              # Interactive CLI — start a conversation
-hermes model        # Choose your LLM provider and model
-hermes tools        # Configure which tools are enabled
-hermes config set   # Set individual config values
-hermes gateway      # Start the messaging gateway (Telegram, Discord, etc.)
-hermes setup        # Run the full setup wizard (configures everything at once)
-hermes claw migrate # Migrate from OpenClaw (if coming from OpenClaw)
-hermes update       # Update to the latest version
-hermes doctor       # Diagnose any issues
-```
-
-📖 **[Full documentation →](https://hermes-agent.nousresearch.com/docs/)**
-
-## CLI vs Messaging Quick Reference
-
-Hermes has two entry points: start the terminal UI with `hermes`, or run the gateway and talk to it from Telegram, Discord, Slack, WhatsApp, Signal, or Email. Once you're in a conversation, many slash commands are shared across both interfaces.
-
-| Action | CLI | Messaging platforms |
-|---------|-----|---------------------|
-| Start chatting | `hermes` | Run `hermes gateway setup` + `hermes gateway start`, then send the bot a message |
-| Start fresh conversation | `/new` or `/reset` | `/new` or `/reset` |
-| Change model | `/model [provider:model]` | `/model [provider:model]` |
-| Set a personality | `/personality [name]` | `/personality [name]` |
-| Retry or undo the last turn | `/retry`, `/undo` | `/retry`, `/undo` |
-| Compress context / check usage | `/compress`, `/usage`, `/insights [--days N]` | `/compress`, `/usage`, `/insights [days]` |
-| Browse skills | `/skills` or `/<skill-name>` | `/<skill-name>` |
-| Interrupt current work | `Ctrl+C` or send a new message | `/stop` or send a new message |
-| Platform-specific status | `/platforms` | `/status`, `/sethome` |
-
-For the full command lists, see the [CLI guide](https://hermes-agent.nousresearch.com/docs/user-guide/cli) and the [Messaging Gateway guide](https://hermes-agent.nousresearch.com/docs/user-guide/messaging).
-
----
-
-## Documentation
-
-All documentation lives at **[hermes-agent.nousresearch.com/docs](https://hermes-agent.nousresearch.com/docs/)**:
-
-| Section | What's Covered |
-|---------|---------------|
-| [Quickstart](https://hermes-agent.nousresearch.com/docs/getting-started/quickstart) | Install → setup → first conversation in 2 minutes |
-| [CLI Usage](https://hermes-agent.nousresearch.com/docs/user-guide/cli) | Commands, keybindings, personalities, sessions |
-| [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) | Config file, providers, models, all options |
-| [Messaging Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/messaging) | Telegram, Discord, Slack, WhatsApp, Signal, Home Assistant |
-| [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) | Command approval, DM pairing, container isolation |
-| [Tools & Toolsets](https://hermes-agent.nousresearch.com/docs/user-guide/features/tools) | 40+ tools, toolset system, terminal backends |
-| [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | Procedural memory, Skills Hub, creating skills |
-| [Memory](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory) | Persistent memory, user profiles, best practices |
-| [MCP Integration](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) | Connect any MCP server for extended capabilities |
-| [Cron Scheduling](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron) | Scheduled tasks with platform delivery |
-| [Context Files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files) | Project context that shapes every conversation |
-| [Architecture](https://hermes-agent.nousresearch.com/docs/developer-guide/architecture) | Project structure, agent loop, key classes |
-| [Contributing](https://hermes-agent.nousresearch.com/docs/developer-guide/contributing) | Development setup, PR process, code style |
-| [CLI Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) | All commands and flags |
-| [Environment Variables](https://hermes-agent.nousresearch.com/docs/reference/environment-variables) | Complete env var reference |
-
----
-
-## Migrating from OpenClaw
-
-If you're coming from OpenClaw, Hermes can automatically import your settings, memories, skills, and API keys.
-
-**During first-time setup:** The setup wizard (`hermes setup`) automatically detects `~/.openclaw` and offers to migrate before configuration begins.
-
-**Anytime after install:**
-
-```bash
-hermes claw migrate              # Interactive migration (full preset)
-hermes claw migrate --dry-run    # Preview what would be migrated
-hermes claw migrate --preset user-data   # Migrate without secrets
-hermes claw migrate --overwrite  # Overwrite existing conflicts
-```
-
-What gets imported:
-- **SOUL.md** — persona file
-- **Memories** — MEMORY.md and USER.md entries
-- **Skills** — user-created skills → `~/.hermes/skills/openclaw-imports/`
-- **Command allowlist** — approval patterns
-- **Messaging settings** — platform configs, allowed users, working directory
-- **API keys** — allowlisted secrets (Telegram, OpenRouter, OpenAI, Anthropic, ElevenLabs)
-- **TTS assets** — workspace audio files
-- **Workspace instructions** — AGENTS.md (with `--workspace-target`)
-
-See `hermes claw migrate --help` for all options, or use the `openclaw-migration` skill for an interactive agent-guided migration with dry-run previews.
-
----
-
-## Contributing
-
-We welcome contributions! See the [Contributing Guide](https://hermes-agent.nousresearch.com/docs/developer-guide/contributing) for development setup, code style, and PR process.
-
-Quick start for contributors — clone and go with `setup-hermes.sh`:
-
-```bash
-git clone https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
-./setup-hermes.sh     # installs uv, creates venv, installs .[all], symlinks ~/.local/bin/hermes
-./hermes              # auto-detects the venv, no need to `source` first
-```
-
-Manual path (equivalent to the above):
-
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
 uv venv .venv --python 3.11
 source .venv/bin/activate
 uv pip install -e ".[all,dev]"
-scripts/run_tests.sh
+
+./hermes
 ```
 
----
+### From This Checkout
 
-## Community
+```bash
+cd /Users/wesleysimplicio/Projetos/contribuicoes/hermes/tota-agent
+source .venv/bin/activate 2>/dev/null || source venv/bin/activate
+uv pip install -e ".[all,dev]"
+./hermes
+```
 
-- 💬 [Discord](https://discord.gg/NousResearch)
-- 📚 [Skills Hub](https://agentskills.io)
-- 🐛 [Issues](https://github.com/NousResearch/hermes-agent/issues)
-- 🔌 [HermesClaw](https://github.com/AaronWong1999/hermesclaw) — Community WeChat bridge: Run Hermes Agent and OpenClaw on the same WeChat account.
+### Performance Extras
 
----
+The benchmarked Tota Agent direction is built around fast Python plus native-extension-ready hot paths:
 
-## License
+```bash
+uv pip install "orjson>=3.11,<4" "msgspec>=0.21,<0.23" "uvloop>=0.22,<0.24"
+```
 
-MIT — see [LICENSE](LICENSE).
+If a local branch includes the Rust extension sources, build them with the branch's normal `maturin develop --release` flow, then verify:
 
-Built by [Nous Research](https://nousresearch.com).
+```bash
+python -c "from agent._hermes_fast import HAVE_RUST; print('Rust:', HAVE_RUST)"
+```
+
+## Benchmark Headline
+
+| Metric | Hermes Original | Tota Agent | OpenClaw | Winner |
+| --- | ---: | ---: | ---: | --- |
+| Total score | 30 / 50 | 44 / 50 | 36 / 50 | Tota Agent |
+| JSON dumps, large payload | 18.40 us | 3.20 us | 5.80 us | Tota Agent |
+| JSON loads, large payload | 12.80 us | 2.80 us | 5.20 us | Tota Agent |
+| Medium message pipeline | 7.50 us | 2.20 us | 3.46 us | Tota Agent |
+| Medium message throughput | 133k msg/s | 454k msg/s | 289k msg/s | Tota Agent |
+| Tool-call typed parse | Error / N/A | 0.45 us | N/A | Tota Agent |
+| Async 1,000 tasks | 2.50 ms | 1.40 ms | 0.08 ms | OpenClaw |
+| Cold start | ~52 ms | ~50 ms | ~280 ms | Tota Agent |
+| RSS memory | ~30 MB | ~30 MB | ~97 MB | Python variants |
+
+Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf), measured on Apple Silicon ARM in May 2026.
+
+## Benchmark Visuals
+
+![Tota Agent JSON latency benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-json-latency.png)
+
+![Tota Agent memory footprint benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-memory-footprint.png)
+
+![Tota Agent message throughput benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-message-throughput.png)
+
+![Tota Agent tool-call parsing benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-tool-call-parsing.png)
+
+![Tota Agent token counting benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-token-counting.png)
+
+![Tota Agent async concurrency benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-concurrency-async.png)
+
+![Tota Agent startup benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-startup-time.png)
+
+![Tota Agent ecosystem scorecard benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-ecosystem-scorecard.png)
+
+## Full Comparison Report
+
+### System Overview
+
+| Attribute | Hermes Original | Tota Agent | OpenClaw |
+| --- | --- | --- | --- |
+| Language | Python 3.14 | Python 3.11.14 | TypeScript / Node.js 22 |
+| JSON engine | stdlib `json` | `orjson` | V8 built-in JSON |
+| Event loop | `asyncio` | `uvloop` | `libuv` |
+| Struct decode | None | `msgspec` | None |
+| Native extension | None | Rust / PyO3 ready | None |
+| Channels measured | WhatsApp, HTTP | WhatsApp, HTTP | WhatsApp, Telegram, Discord, HTTP |
+| Category | AI Agent | Optimized Python AI Agent | Multi-channel AI Gateway |
+
+### Architecture
+
+| Component | Hermes Original | Tota Agent | OpenClaw |
+| --- | --- | --- | --- |
+| Runtime | CPython 3.14 | CPython 3.11.14 | Node.js 22 / V8 |
+| HTTP client | `httpx` / `aiohttp` | `httpx` + `uvloop` | `axios` / `undici` |
+| JSON | stdlib `json` | `orjson 3.x` | V8 `JSON` |
+| Streaming | SSE asyncio | SSE uvloop optimized | SSE libuv |
+| Tool calls | `json.loads` | Rust ext + `orjson` + `msgspec` | `JSON.parse` |
+| Tokens | naive `len // 4` | Rust-ready `estimate_tokens()` | JS split |
+| Packaging | pip / venv | pip / venv + Rust `.so` | npm / node_modules |
+
+### JSON Serialization
+
+Lower latency is better.
+
+| Payload | Hermes dumps | Tota dumps | OpenClaw dumps | Tota vs Hermes |
+| --- | ---: | ---: | ---: | ---: |
+| Short, ~50 B | 1.29 us | 0.21 us | 0.17 us | 6.1x faster |
+| Medium, ~600 B | 3.38 us | 0.80 us | 1.00 us | 4.2x faster |
+| Large, ~50 KB | 18.40 us | 3.20 us | 5.80 us | 5.8x faster |
+
+| Payload | Hermes loads | Tota loads | OpenClaw loads | Tota vs Hermes |
+| --- | ---: | ---: | ---: | ---: |
+| Short, ~50 B | 0.62 us | 0.30 us | 0.33 us | 2.1x faster |
+| Medium, ~600 B | 2.90 us | 1.30 us | 2.29 us | 2.2x faster |
+| Large, ~50 KB | 12.80 us | 2.80 us | 5.20 us | 4.6x faster |
+
+### Memory
+
+| Metric | Hermes Original | Tota Agent | OpenClaw |
+| --- | ---: | ---: | ---: |
+| `json.dumps` medium heap / 1k calls | ~420 KB | ~180 KB | ~160 KB |
+| `json.loads` medium heap / 1k calls | ~380 KB | ~140 KB | ~200 KB |
+| `msgspec` encode medium heap / 1k calls | N/A | ~95 KB | N/A |
+| Process RSS | ~30 MB | ~30 MB | ~97 MB |
+| Disk footprint | ~10 MB | ~15 MB | ~200 MB |
+
+### Message Pipeline
+
+| Pipeline metric | Hermes Original | Tota Agent | OpenClaw | Tota vs Hermes |
+| --- | ---: | ---: | ---: | ---: |
+| Short message latency | 2.10 us | 0.55 us | 0.55 us | 3.8x faster |
+| Medium message latency | 7.50 us | 2.20 us | 3.46 us | 3.4x faster |
+| Short message throughput | 476k msg/s | 1.82M msg/s | 1.82M msg/s | 3.8x |
+| Medium message throughput | 133k msg/s | 454k msg/s | 289k msg/s | 3.4x |
+
+### Tool-Call Parsing
+
+| Method | Hermes Original | Tota Agent | OpenClaw |
+| --- | ---: | ---: | ---: |
+| JSON parse path | ERROR | 1.30 us | 0.54 us |
+| `orjson.loads` | N/A | 1.00 us | N/A |
+| `msgspec` ToolCall struct | N/A | 0.45 us | N/A |
+| Rust `parse_tool_call_delta` | N/A | ~0.40 us | N/A |
+| Throughput | N/A | ~2.5M/s | ~1.85M/s |
+
+### Tokens, Async, Startup
+
+| Metric | Hermes Original | Tota Agent | OpenClaw | Winner |
+| --- | ---: | ---: | ---: | --- |
+| Fast token estimate | 0.12 us | 0.10 us | 0.04 us | OpenClaw |
+| Token throughput | 8.3M texts/s | 10M texts/s | 25M texts/s | OpenClaw |
+| 1,000 async tasks | 2.50 ms | 1.40 ms | 0.08 ms | OpenClaw |
+| Async batches/s | 400/s | 714/s | 12,500/s | OpenClaw |
+| Cold start total | ~52 ms | ~50 ms | ~280 ms | Tota Agent |
+
+### Category Score
+
+| Category | Hermes Original | Tota Agent | OpenClaw |
+| --- | ---: | ---: | ---: |
+| JSON performance | 2 / 5 | 5 / 5 | 4 / 5 |
+| Memory | 5 / 5 | 5 / 5 | 2 / 5 |
+| Message throughput | 2 / 5 | 5 / 5 | 4 / 5 |
+| Tool-call parsing | 1 / 5 | 5 / 5 | 4 / 5 |
+| Token counting | 3 / 5 | 3 / 5 | 4 / 5 |
+| Concurrency / async | 3 / 5 | 4 / 5 | 5 / 5 |
+| Startup / cold start | 4 / 5 | 5 / 5 | 2 / 5 |
+| Integrations | 3 / 5 | 3 / 5 | 5 / 5 |
+| Library ecosystem | 2 / 5 | 5 / 5 | 4 / 5 |
+| Disk footprint | 5 / 5 | 4 / 5 | 2 / 5 |
+| **Total** | **30 / 50** | **44 / 50** | **36 / 50** |
+
+## Usage Recommendations
+
+| Scenario | Recommended | Reason |
+| --- | --- | --- |
+| WhatsApp / HTTP AI agent | Tota Agent | 4-6x faster JSON path with Hermes-compatible Python ergonomics. |
+| Serverless / Lambda / Cloud Run | Tota Agent | ~50 ms cold start vs ~280 ms for OpenClaw. |
+| Low memory footprint | Tota Agent | ~30 MB RSS vs ~97 MB for OpenClaw. |
+| Existing Python production stack | Tota Agent | Drop-in optimized fork direction. |
+| 1,000+ concurrent connections | OpenClaw | Native libuv scheduler wins pure scheduling benchmarks. |
+| Multi-channel out of the box | OpenClaw | More native integrations in the benchmarked surface. |
+| Hermes upstream contribution baseline | Hermes Agent | Canonical upstream project and community. |
+
+## Development
+
+```bash
+source .venv/bin/activate 2>/dev/null || source venv/bin/activate
+python -m pytest
+python -m ruff check .
+taskflow run .
+```
+
+For this repository, `taskflow inspect .` detects the Python and Node surfaces and `taskflow run .` produces the local validation checklist.
+
+## Upstream
+
+Tota Agent is a fork of [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent). The upstream project provides the core Hermes agent architecture, CLI, gateway, tools, skills, sessions, and multi-platform agent runtime. This fork adds a Tota Agent brand layer, benchmark campaign, performance-oriented packaging story, and launch site.
