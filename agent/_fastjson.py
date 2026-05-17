@@ -52,10 +52,11 @@ def dumps(
     ensure_ascii: bool = False,
     sort_keys: bool = False,
     indent: int | None = None,
+    separators: tuple[str, str] | None = None,
     default: Any = None,
 ) -> str:
     if _HAVE_ORJSON:
-        if ensure_ascii:
+        if ensure_ascii or separators not in (None, (",", ":")):
             import json as _json_local
 
             return _json_local.dumps(
@@ -63,6 +64,7 @@ def dumps(
                 ensure_ascii=ensure_ascii,
                 sort_keys=sort_keys,
                 indent=indent,
+                separators=separators,
                 default=default,
             )
         opt = 0
@@ -77,6 +79,7 @@ def dumps(
                 ensure_ascii=ensure_ascii,
                 sort_keys=sort_keys,
                 indent=indent,
+                separators=separators,
                 default=default,
             )
         if default is not None:
@@ -88,10 +91,15 @@ def dumps(
             ensure_ascii=ensure_ascii,
             sort_keys=sort_keys,
             indent=indent,
+            separators=separators,
             default=default,
         )
     return _json.dumps(
-        obj, ensure_ascii=ensure_ascii, sort_keys=sort_keys, indent=indent
+        obj,
+        ensure_ascii=ensure_ascii,
+        sort_keys=sort_keys,
+        indent=indent,
+        separators=separators,
     )
 
 
@@ -101,10 +109,11 @@ def dumps_bytes(
     ensure_ascii: bool = False,
     sort_keys: bool = False,
     indent: int | None = None,
+    separators: tuple[str, str] | None = None,
     default: Any = None,
 ) -> bytes:
     """Serialize to UTF-8 JSON bytes without the normal ``.decode()`` cost."""
-    if _HAVE_ORJSON and not ensure_ascii:
+    if _HAVE_ORJSON and not ensure_ascii and separators in (None, (",", ":")):
         opt = 0
         if sort_keys:
             opt |= _orjson.OPT_SORT_KEYS
@@ -116,6 +125,7 @@ def dumps_bytes(
                 ensure_ascii=ensure_ascii,
                 sort_keys=sort_keys,
                 indent=indent,
+                separators=separators,
                 default=default,
             ).encode("utf-8")
         if default is not None:
@@ -129,6 +139,7 @@ def dumps_bytes(
             ensure_ascii=ensure_ascii,
             sort_keys=sort_keys,
             indent=indent,
+            separators=separators,
             default=default,
         ).encode("utf-8")
     return dumps(
@@ -136,6 +147,7 @@ def dumps_bytes(
         ensure_ascii=ensure_ascii,
         sort_keys=sort_keys,
         indent=indent,
+        separators=separators,
         default=default,
     ).encode("utf-8")
 
