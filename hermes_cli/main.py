@@ -121,7 +121,7 @@ except Exception:
 # We intercept --profile/-p from sys.argv here and set the env var so that
 # every subsequent ``os.getenv("HERMES_HOME", ...)`` resolves correctly.
 # The flag is stripped from sys.argv so argparse never sees it.
-# Falls back to ~/.hermes/active_profile for sticky default.
+# Falls back to the configured home active_profile for sticky default.
 # ---------------------------------------------------------------------------
 def _apply_profile_override() -> None:
     """Pre-parse --profile/-p and set HERMES_HOME before module imports."""
@@ -151,16 +151,16 @@ def _apply_profile_override() -> None:
             profile_name = None
             consume = 0
 
-    # 1.5 If HERMES_HOME is already set and no explicit flag was given, trust it
+    # 1.5 If TOTA_HOME/HERMES_HOME is already set and no explicit flag was given, trust it
     # only when it already points to a specific profile directory.  The
     # distinguishing heuristic: a profile path has "profiles" as its immediate
-    # parent directory name (e.g. ~/.hermes/profiles/coder or
+    # parent directory name (e.g. ~/.tota/profiles/coder or
     # /opt/data/profiles/coder).  If HERMES_HOME points to the hermes root
-    # instead (e.g. systemd hardcodes HERMES_HOME=/root/.hermes), we must
+    # instead (e.g. systemd hardcodes HERMES_HOME=/root/.tota), we must
     # still read active_profile — the user may have switched profiles via
     # `hermes profile use` and the gateway should honour that choice.
     # See issue #22502.
-    hermes_home_env = os.environ.get("HERMES_HOME", "")
+    hermes_home_env = os.environ.get("TOTA_HOME", "") or os.environ.get("HERMES_HOME", "")
     if profile_name is None and hermes_home_env:
         if Path(hermes_home_env).parent.name == "profiles":
             return
@@ -211,7 +211,7 @@ def _apply_profile_override() -> None:
 
 _apply_profile_override()
 
-# Load .env from ~/.hermes/.env first, then project root as dev fallback.
+# Load .env from the configured home .env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
 from hermes_cli.config import get_hermes_home
 from hermes_cli.env_loader import load_hermes_dotenv
@@ -996,7 +996,7 @@ def _ensure_tui_node() -> None:
     if not helper.is_file():
         return
 
-    hermes_home = os.environ.get("HERMES_HOME") or str(Path.home() / ".hermes")
+    hermes_home = str(get_hermes_home())
     try:
         # Helper writes logs to stderr; we ask bash to print `command -v node`
         # on stdout once ensure_node succeeds. Subshell PATH edits don't leak
@@ -9033,7 +9033,9 @@ def cmd_profile(args):
         try:
             set_active_profile(name)
             if name == "default":
-                print(f"Switched to: default (~/.hermes)")
+                from hermes_constants import display_hermes_home
+
+                print(f"Switched to: default ({display_hermes_home()})")
             else:
                 print(f"Switched to: {name}")
         except (ValueError, FileNotFoundError) as e:

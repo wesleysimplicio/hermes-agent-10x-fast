@@ -80,7 +80,12 @@ Python fallbacks for locked-down or source-only environments.
 
 ### Post-Benchmark Performance Patch
 
-Version `0.13.1` applies the benchmark follow-up plan:
+Version `0.13.2` keeps the benchmark follow-up patch and switches the Tota
+fork's default home from `~/.hermes` to `~/.tota` for new installs. `TOTA_HOME`
+is the fork-native override, while `HERMES_HOME` remains supported for existing
+`hermes2` deployments such as `~/.hermes2`.
+
+Version `0.13.1` applied the benchmark follow-up plan:
 
 - Bytes-native JSON via `agent._fastjson.dumps_bytes()` for short payload hot paths.
 - Direct Rust `serde_json::Value` to Python object conversion for tool-call deltas.

@@ -8,26 +8,42 @@ import os
 from pathlib import Path
 
 
+DEFAULT_HOME_DIRNAME = ".tota"
+TOTA_HOME_ENV = "TOTA_HOME"
+LEGACY_HOME_ENV = "HERMES_HOME"
+
 _profile_fallback_warned: bool = False
 
 
-def get_hermes_home() -> Path:
-    """Return the Hermes home directory (default: ~/.hermes).
+def _default_home() -> Path:
+    return Path.home() / DEFAULT_HOME_DIRNAME
 
-    Reads HERMES_HOME env var, falls back to ~/.hermes.
+
+def _configured_home_env() -> str:
+    """Return the configured home path, honoring Tota then legacy Hermes env."""
+    val = os.environ.get(TOTA_HOME_ENV, "").strip()
+    if val:
+        return val
+    return os.environ.get(LEGACY_HOME_ENV, "").strip()
+
+
+def get_hermes_home() -> Path:
+    """Return the Tota/Hermes home directory (default: ~/.tota).
+
+    Reads TOTA_HOME first, then legacy HERMES_HOME, then falls back to ~/.tota.
     This is the single source of truth — all other copies should import this.
 
-    When ``HERMES_HOME`` is unset but an ``active_profile`` file indicates
+    When home env vars are unset but an ``active_profile`` file indicates
     a non-default profile is active, logs a loud one-shot warning to
     ``errors.log`` so cross-profile data corruption is diagnosable instead
     of silent.  Behavior is unchanged otherwise — we still return
-    ``~/.hermes`` — because raising here would brick 30+ module-level
+    ``~/.tota`` — because raising here would brick 30+ module-level
     callers that import this at load time.  Subprocess spawners are
     expected to propagate ``HERMES_HOME`` explicitly (see the systemd
     template in ``hermes_cli/gateway.py`` and the kanban dispatcher in
     ``hermes_cli/kanban_db.py``).  See https://github.com/NousResearch/hermes-agent/issues/18594.
     """
-    val = os.environ.get("HERMES_HOME", "").strip()
+    val = _configured_home_env()
     if val:
         return Path(val)
 
@@ -39,7 +55,7 @@ def get_hermes_home() -> Path:
             # Inline the default-root resolution from get_default_hermes_root()
             # to stay import-safe (this function is called from module scope
             # in 30+ files; we cannot afford to trigger logging setup here).
-            active_path = (Path.home() / ".hermes" / "active_profile")
+            active_path = _default_home() / "active_profile"
             active = active_path.read_text().strip() if active_path.exists() else ""
         except (UnicodeDecodeError, OSError):
             active = ""
@@ -52,8 +68,8 @@ def get_hermes_home() -> Path:
             # on consoles where a StreamHandler is already attached.
             import sys
             msg = (
-                f"[HERMES_HOME fallback] HERMES_HOME is unset but active "
-                f"profile is {active!r}. Falling back to ~/.hermes, which "
+                f"[HERMES_HOME fallback] TOTA_HOME/HERMES_HOME are unset but active "
+                f"profile is {active!r}. Falling back to ~/{DEFAULT_HOME_DIRNAME}, which "
                 f"is the DEFAULT profile — not {active!r}. Any data this "
                 f"process writes will land in the wrong profile. The "
                 f"subprocess spawner should pass HERMES_HOME explicitly "
@@ -65,33 +81,33 @@ def get_hermes_home() -> Path:
             except Exception:
                 pass
 
-    return Path.home() / ".hermes"
+    return _default_home()
 
 
 def get_default_hermes_root() -> Path:
     """Return the root Hermes directory for profile-level operations.
 
-    In standard deployments this is ``~/.hermes``.
+    In standard Tota deployments this is ``~/.tota``.
 
     In Docker or custom deployments where ``HERMES_HOME`` points outside
-    ``~/.hermes`` (e.g. ``/opt/data``), returns ``HERMES_HOME`` directly
+    ``~/.tota`` (e.g. ``/opt/data``), returns ``HERMES_HOME`` directly
     — that IS the root.
 
     In profile mode where ``HERMES_HOME`` is ``<root>/profiles/<name>``,
     returns ``<root>`` so that ``profile list`` can see all profiles.
-    Works both for standard (``~/.hermes/profiles/coder``) and Docker
+    Works both for standard (``~/.tota/profiles/coder``) and Docker
     (``/opt/data/profiles/coder``) layouts.
 
     Import-safe — no dependencies beyond stdlib.
     """
-    native_home = Path.home() / ".hermes"
-    env_home = os.environ.get("HERMES_HOME", "")
+    native_home = _default_home()
+    env_home = _configured_home_env()
     if not env_home:
         return native_home
     env_path = Path(env_home)
     try:
         env_path.resolve().relative_to(native_home.resolve())
-        # HERMES_HOME is under ~/.hermes (normal or profile mode)
+        # HERMES_HOME is under ~/.tota (normal or profile mode)
         return native_home
     except ValueError:
         pass
@@ -147,12 +163,12 @@ def display_hermes_home() -> str:
 
     Uses ``~/`` shorthand for readability::
 
-        default:  ``~/.hermes``
-        profile:  ``~/.hermes/profiles/coder``
+        default:  ``~/.tota``
+        profile:  ``~/.tota/profiles/coder``
         custom:   ``/opt/hermes-custom``
 
     Use this in **user-facing** print/log messages instead of hardcoding
-    ``~/.hermes``.  For code that needs a real ``Path``, use
+    ``~/.tota``.  For code that needs a real ``Path``, use
     :func:`get_hermes_home` instead.
     """
     home = get_hermes_home()
@@ -179,7 +195,7 @@ def get_subprocess_home() -> str | None:
     Activation is directory-based: if the ``home/`` subdirectory doesn't
     exist, returns ``None`` and behavior is unchanged.
     """
-    hermes_home = os.getenv("HERMES_HOME")
+    hermes_home = _configured_home_env()
     if not hermes_home:
         return None
     profile_home = os.path.join(hermes_home, "home")

@@ -27,7 +27,12 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Prefer a .venv in the current tree, fall back to the main checkout's venv
 # (useful for worktrees where we don't always duplicate the venv).
 VENV=""
-for candidate in "$REPO_ROOT/.venv" "$REPO_ROOT/venv" "$HOME/.hermes/hermes-agent/venv"; do
+for candidate in \
+    "$REPO_ROOT/.venv" \
+    "$REPO_ROOT/venv" \
+    "$HOME/.tota/hermes-agent/venv" \
+    "$HOME/.hermes2/hermes-agent/venv" \
+    "$HOME/.hermes/hermes-agent/venv"; do
   if [ -f "$candidate/bin/activate" ]; then
     VENV="$candidate"
     break
