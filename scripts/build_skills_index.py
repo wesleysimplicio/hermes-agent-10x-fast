@@ -29,7 +29,10 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO_ROOT)
 
 # Ensure HERMES_HOME is set (needed by tools/skills_hub.py imports)
-os.environ.setdefault("HERMES_HOME", os.path.join(os.path.expanduser("~"), ".hermes"))
+os.environ.setdefault(
+    "HERMES_HOME",
+    os.environ.get("TOTA_HOME", os.path.join(os.path.expanduser("~"), ".tota")),
+)
 
 from tools.skills_hub import (
     GitHubAuth,
@@ -147,7 +150,7 @@ def batch_resolve_paths(skills: list, auth: GitHubAuth) -> list:
     4. Match skills to their resolved paths
     """
     # Filter to skills.sh entries that need resolution
-    skills_sh = [s for s in skills if s["source"] in ("skills.sh", "skills-sh")]
+    skills_sh = [s for s in skills if s["source"] in {"skills.sh", "skills-sh"}]
     if not skills_sh:
         return skills
 

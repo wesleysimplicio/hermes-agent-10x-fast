@@ -517,6 +517,42 @@ class TestExtractReasoning:
         msg = _mock_assistant_msg(content=content)
         assert agent._extract_reasoning(msg) == expected
 
+    def test_content_list_thinking_blocks_extracted(self, agent):
+        """DeepSeek V4 Pro returns content as a typed-block list (issue #21944).
+
+        Without this branch thinking text is silently dropped → HTTP 400 on
+        the next turn ("thinking must be passed back to the API").
+        """
+        msg = _mock_assistant_msg(
+            content=[
+                {"type": "thinking", "thinking": "deep analysis here"},
+                {"type": "output", "text": "final answer"},
+            ]
+        )
+        result = agent._extract_reasoning(msg)
+        assert result == "deep analysis here"
+
+    def test_content_list_non_thinking_blocks_ignored(self, agent):
+        """Non-thinking blocks in a content list must not be treated as reasoning."""
+        msg = _mock_assistant_msg(
+            content=[
+                {"type": "text", "text": "just a regular response"},
+            ]
+        )
+        assert agent._extract_reasoning(msg) is None
+
+    def test_content_list_thinking_prefers_structured_field(self, agent):
+        """Structured ``reasoning`` field wins over content-list thinking blocks."""
+        msg = _mock_assistant_msg(
+            reasoning="from structured field",
+            content=[
+                {"type": "thinking", "thinking": "from content list"},
+            ],
+        )
+        result = agent._extract_reasoning(msg)
+        # structured field was found first → content-list branch skipped
+        assert result == "from structured field"
+
 
 class TestCleanSessionContent:
     def test_none_passthrough(self):
@@ -1848,6 +1884,51 @@ class TestConcurrentToolExecution:
                 mock_con.assert_called_once()
                 mock_seq.assert_not_called()
 
+    def test_concurrent_reuses_parallel_guard_parsed_args(self, agent):
+        """The guard should not force concurrent execution to parse args twice."""
+        from run_agent import _should_parallelize_tool_batch
+
+        tc1 = _mock_tool_call(name="read_file", arguments='{"path":"a.py"}', call_id="c1")
+        tc2 = _mock_tool_call(name="read_file", arguments='{"path":"b.py"}', call_id="c2")
+        mock_msg = _mock_assistant_msg(content="", tool_calls=[tc1, tc2])
+
+        assert _should_parallelize_tool_batch(mock_msg.tool_calls)
+        messages = []
+        with patch("run_agent.json.loads", side_effect=AssertionError("reparsed args")):
+            with patch("run_agent.handle_function_call", return_value='{"ok": true}') as mock_handle:
+                with patch.object(
+                    agent._tool_guardrails,
+                    "after_call",
+                    return_value=SimpleNamespace(action="allow", should_halt=False),
+                ):
+                    agent._execute_tool_calls_concurrent(mock_msg, messages, "task-1")
+
+        assert mock_handle.call_count == 2
+        assert [call.args[1]["path"] for call in mock_handle.call_args_list] == ["a.py", "b.py"]
+
+    def test_concurrent_reuses_guard_args_for_mixed_safe_batches(self, agent):
+        """Mixed safe batches should reuse the guard's parsed args too."""
+        from run_agent import _should_parallelize_tool_batch
+
+        tc1 = _mock_tool_call(name="read_file", arguments='{"path":"a.py"}', call_id="c1")
+        tc2 = _mock_tool_call(name="web_search", arguments='{"q":"hermes"}', call_id="c2")
+        mock_msg = _mock_assistant_msg(content="", tool_calls=[tc1, tc2])
+
+        assert _should_parallelize_tool_batch(mock_msg.tool_calls)
+        messages = []
+        with patch("run_agent.json.loads", side_effect=AssertionError("reparsed args")):
+            with patch("run_agent.handle_function_call", return_value='{"ok": true}') as mock_handle:
+                with patch.object(
+                    agent._tool_guardrails,
+                    "after_call",
+                    return_value=SimpleNamespace(action="allow", should_halt=False),
+                ):
+                    agent._execute_tool_calls_concurrent(mock_msg, messages, "task-1")
+
+        assert mock_handle.call_count == 2
+        assert mock_handle.call_args_list[0].args[1]["path"] == "a.py"
+        assert mock_handle.call_args_list[1].args[1]["q"] == "hermes"
+
     def test_terminal_batch_forces_sequential(self, agent):
         """Stateful tools should not share the concurrent execution path."""
         tc1 = _mock_tool_call(name="web_search", arguments='{}', call_id="c1")
@@ -2232,6 +2313,19 @@ class TestParallelScopePathNormalization:
 
         assert not _should_parallelize_tool_batch([tc1, tc2])
 
+    def test_extract_parallel_scope_path_applies_normcase(self, tmp_path, monkeypatch):
+        import run_agent
+        from run_agent import _extract_parallel_scope_path, _paths_overlap
+
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(run_agent.os.path, "normcase", lambda value: value.lower())
+
+        lower = _extract_parallel_scope_path("write_file", {"path": "notes.txt"})
+        mixed = _extract_parallel_scope_path("write_file", {"path": "NOTES.txt"})
+
+        assert lower == mixed
+        assert _paths_overlap(lower, mixed)
+
 
 class TestHandleMaxIterations:
     def test_returns_summary(self, agent):
@@ -2488,8 +2582,9 @@ class TestRunConversation:
         assert [call["api_call_count"] for call in pre_request_calls] == [1, 2]
         assert [call["api_call_count"] for call in post_request_calls] == [1, 2]
         assert all(call["session_id"] == agent.session_id for call in pre_request_calls)
-        assert all("message_count" in c and "messages" not in c for c in pre_request_calls)
-        assert all("usage" in c and "response" not in c for c in post_request_calls)
+        assert all("message_count" in c and isinstance(c.get("request_messages"), list) for c in pre_request_calls)
+        assert any(msg.get("role") == "user" and msg.get("content") == "search something" for msg in pre_request_calls[0]["request_messages"])
+        assert all("usage" in c and "response" in c and "assistant_message" in c for c in post_request_calls)
 
     def test_content_with_tool_calls_stays_silent_for_non_cli_quiet_mode(self, agent):
         self._setup_agent(agent)
@@ -3307,6 +3402,88 @@ class TestRunConversation:
         assert result["partial"] is True
         assert "truncated due to output length limit" in result["error"]
         mock_handle_function_call.assert_not_called()
+
+    def test_kanban_block_called_on_iteration_exhaustion(self, agent, monkeypatch):
+        """Regression: kanban worker must call kanban_block when iteration
+        budget is exhausted, otherwise the dispatcher sees a protocol
+        violation and gives up after 1 failure (issue #23216)."""
+        self._setup_agent(agent)
+        agent.max_iterations = 2
+
+        monkeypatch.setenv("HERMES_KANBAN_TASK", "t_test_task_123")
+
+        # Return a tool call for every iteration to exhaust the budget.
+        tc = _mock_tool_call(name="web_search", arguments="{}", call_id="c1")
+        tool_resp = _mock_response(
+            content="", finish_reason="tool_calls", tool_calls=[tc],
+        )
+        # Final summary response from _handle_max_iterations.
+        summary_resp = _mock_response(
+            content="Could not finish — budget exhausted.", finish_reason="stop",
+        )
+        agent.client.chat.completions.create.side_effect = [
+            tool_resp, tool_resp, summary_resp,
+        ]
+
+        with (
+            patch("run_agent.handle_function_call", return_value="ok") as mock_hfc,
+            patch.object(agent, "_persist_session"),
+            patch.object(agent, "_save_trajectory"),
+            patch.object(agent, "_cleanup_task_resources"),
+        ):
+            result = agent.run_conversation("do the kanban work")
+
+        # The agent should have reported the task as not completed.
+        assert result["completed"] is False
+
+        # Among all handle_function_call invocations, one must be
+        # kanban_block with the correct task_id and a reason mentioning
+        # iteration exhaustion.
+        kanban_block_calls = [
+            c for c in mock_hfc.call_args_list
+            if c[0][0] == "kanban_block"
+        ]
+        assert len(kanban_block_calls) == 1, (
+            f"Expected exactly 1 kanban_block call, got {len(kanban_block_calls)}. "
+            f"All calls: {mock_hfc.call_args_list}"
+        )
+        call = kanban_block_calls[0]
+        assert call[0][1]["task_id"] == "t_test_task_123"
+        assert "Iteration budget exhausted" in call[0][1]["reason"]
+
+    def test_no_kanban_block_when_not_in_kanban_mode(self, agent, monkeypatch):
+        """kanban_block must NOT be called when HERMES_KANBAN_TASK is unset."""
+        self._setup_agent(agent)
+        agent.max_iterations = 2
+
+        monkeypatch.delenv("HERMES_KANBAN_TASK", raising=False)
+
+        tc = _mock_tool_call(name="web_search", arguments="{}", call_id="c1")
+        tool_resp = _mock_response(
+            content="", finish_reason="tool_calls", tool_calls=[tc],
+        )
+        summary_resp = _mock_response(
+            content="Summary.", finish_reason="stop",
+        )
+        agent.client.chat.completions.create.side_effect = [
+            tool_resp, tool_resp, summary_resp,
+        ]
+
+        with (
+            patch("run_agent.handle_function_call", return_value="ok") as mock_hfc,
+            patch.object(agent, "_persist_session"),
+            patch.object(agent, "_save_trajectory"),
+            patch.object(agent, "_cleanup_task_resources"),
+        ):
+            agent.run_conversation("do stuff")
+
+        kanban_block_calls = [
+            c for c in mock_hfc.call_args_list
+            if c[0][0] == "kanban_block"
+        ]
+        assert len(kanban_block_calls) == 0, (
+            "kanban_block should not be called outside kanban mode"
+        )
 
 
 class TestRetryExhaustion:

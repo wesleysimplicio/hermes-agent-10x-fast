@@ -56,7 +56,7 @@ def curses_checklist(
 
     # Safety: curses and input() both hang or spin when stdin is not a
     # terminal (e.g. subprocess pipe).  Return defaults immediately.
-    if not sys.stdin.isatty():
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
         return cancel_returns
 
     try:
@@ -139,16 +139,16 @@ def curses_checklist(
                 stdscr.refresh()
                 key = stdscr.getch()
 
-                if key in (curses.KEY_UP, ord("k")):
+                if key in {curses.KEY_UP, ord("k")}:
                     cursor = (cursor - 1) % len(items)
-                elif key in (curses.KEY_DOWN, ord("j")):
+                elif key in {curses.KEY_DOWN, ord("j")}:
                     cursor = (cursor + 1) % len(items)
                 elif key == ord(" "):
                     chosen.symmetric_difference_update({cursor})
-                elif key in (curses.KEY_ENTER, 10, 13):
+                elif key in {curses.KEY_ENTER, 10, 13}:
                     result_holder[0] = set(chosen)
                     return
-                elif key in (27, ord("q")):
+                elif key in {27, ord("q")}:
                     result_holder[0] = cancel_returns
                     return
 
@@ -159,6 +159,8 @@ def curses_checklist(
     except KeyboardInterrupt:
         return cancel_returns
     except Exception:
+        if not sys.stdin.isatty() or not sys.stdout.isatty():
+            return cancel_returns
         return _numbered_fallback(title, items, selected, cancel_returns, status_fn)
 
 
@@ -265,14 +267,14 @@ def curses_radiolist(
                 stdscr.refresh()
                 key = stdscr.getch()
 
-                if key in (curses.KEY_UP, ord("k")):
+                if key in {curses.KEY_UP, ord("k")}:
                     cursor = (cursor - 1) % len(items)
-                elif key in (curses.KEY_DOWN, ord("j")):
+                elif key in {curses.KEY_DOWN, ord("j")}:
                     cursor = (cursor + 1) % len(items)
-                elif key in (ord(" "), curses.KEY_ENTER, 10, 13):
+                elif key in {ord(" "), curses.KEY_ENTER, 10, 13}:
                     result_holder[0] = cursor
                     return
-                elif key in (27, ord("q")):
+                elif key in {27, ord("q")}:
                     result_holder[0] = cancel_returns
                     return
 
@@ -388,14 +390,14 @@ def curses_single_select(
                 stdscr.refresh()
                 key = stdscr.getch()
 
-                if key in (curses.KEY_UP, ord("k")):
+                if key in {curses.KEY_UP, ord("k")}:
                     cursor = (cursor - 1) % len(all_items)
-                elif key in (curses.KEY_DOWN, ord("j")):
+                elif key in {curses.KEY_DOWN, ord("j")}:
                     cursor = (cursor + 1) % len(all_items)
-                elif key in (curses.KEY_ENTER, 10, 13):
+                elif key in {curses.KEY_ENTER, 10, 13}:
                     result_holder[0] = cursor
                     return
-                elif key in (27, ord("q")):
+                elif key in {27, ord("q")}:
                     result_holder[0] = None
                     return
 

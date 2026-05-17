@@ -75,6 +75,55 @@ class TestDelegateRequirements(unittest.TestCase):
         self.assertNotIn("max_iterations", props)
         self.assertNotIn("maxItems", props["tasks"])  # removed — limit is now runtime-configurable
 
+    def test_schema_description_advertises_runtime_limits(self):
+        """The model must see the user's actual concurrency / spawn-depth caps,
+        not the framework defaults. Without this, models that read 'default 3'
+        will self-cap below the user's real limit.
+        """
+        from tools.delegate_tool import (
+            _build_dynamic_schema_overrides,
+            _get_max_concurrent_children,
+            _get_max_spawn_depth,
+        )
+
+        overrides = _build_dynamic_schema_overrides()
+        max_children = _get_max_concurrent_children()
+        max_depth = _get_max_spawn_depth()
+
+        desc = overrides["description"]
+        tasks_desc = overrides["parameters"]["properties"]["tasks"]["description"]
+        role_desc = overrides["parameters"]["properties"]["role"]["description"]
+
+        # Top-level description names the user's concurrency limit explicitly.
+        self.assertIn(f"up to {max_children}", desc)
+        # Top-level description names the user's spawn-depth limit explicitly.
+        self.assertIn(f"max_spawn_depth={max_depth}", desc)
+        # tasks parameter description repeats the concurrency cap.
+        self.assertIn(f"up to {max_children}", tasks_desc)
+        # role parameter description names the spawn-depth limit.
+        self.assertIn(f"max_spawn_depth={max_depth}", role_desc)
+        # The misleading "default 3" / "default 2" wording is gone from
+        # every dynamic surface (model-facing).
+        for surface in (desc, tasks_desc, role_desc):
+            self.assertNotIn("default 3", surface)
+            self.assertNotIn("default 2", surface)
+
+    def test_schema_overrides_applied_via_get_definitions(self):
+        """Registry.get_definitions() must apply dynamic_schema_overrides so
+        the model API call sees current values, not the static import-time text.
+        """
+        from tools.registry import registry
+        defs = registry.get_definitions({"delegate_task"})
+        self.assertEqual(len(defs), 1)
+        fn = defs[0]["function"]
+        # Description should mention the user's actual limits, not "default 3".
+        from tools.delegate_tool import (
+            _get_max_concurrent_children,
+            _get_max_spawn_depth,
+        )
+        self.assertIn(f"up to {_get_max_concurrent_children()}", fn["description"])
+        self.assertIn(f"max_spawn_depth={_get_max_spawn_depth()}", fn["description"])
+
 
 class TestChildSystemPrompt(unittest.TestCase):
     def test_goal_only(self):
@@ -166,6 +215,126 @@ class TestDelegateTask(unittest.TestCase):
         self.assertEqual(result["results"][0]["summary"], "Result A")
         self.assertEqual(result["results"][1]["summary"], "Result B")
         self.assertIn("total_duration_seconds", result)
+
+    def test_batch_reuses_one_config_snapshot_for_children(self):
+        parent = _make_mock_parent()
+        parent._memory_manager = None
+        tasks = [{"goal": "Task A"}, {"goal": "Task B"}, {"goal": "Task C"}]
+        cfg = {
+            "max_iterations": 17,
+            "max_spawn_depth": 2,
+            "max_concurrent_children": 3,
+            "orchestrator_enabled": True,
+            "inherit_mcp_toolsets": False,
+            "child_timeout_seconds": 45,
+            "subagent_auto_approve": False,
+        }
+        load_calls = 0
+
+        def fake_load_config():
+            nonlocal load_calls
+            load_calls += 1
+            return dict(cfg)
+
+        def fake_child(index):
+            child = MagicMock()
+            child._delegate_role = "leaf"
+            child._subagent_id = f"sa-{index}"
+            return child
+
+        with patch("tools.delegate_tool._load_config", side_effect=fake_load_config), \
+             patch("tools.delegate_tool._build_child_agent") as mock_build, \
+             patch("tools.delegate_tool._run_single_child") as mock_run:
+            mock_build.side_effect = lambda **kwargs: fake_child(kwargs["task_index"])
+            mock_run.side_effect = lambda **kwargs: {
+                "task_index": kwargs["task_index"],
+                "status": "completed",
+                "summary": f"done {kwargs['task_index']}",
+                "api_calls": 0,
+                "duration_seconds": 0.01,
+                "_child_role": "leaf",
+            }
+
+            result = json.loads(delegate_task(tasks=tasks, parent_agent=parent))
+
+        self.assertEqual(load_calls, 1)
+        self.assertEqual(mock_build.call_count, 3)
+        self.assertEqual(mock_run.call_count, 3)
+        self.assertIn("phase_timings", result)
+        self.assertEqual(set(result["phase_timings"].keys()), {
+            "config_seconds",
+            "credentials_seconds",
+            "child_build_seconds",
+            "child_run_seconds",
+            "aggregation_seconds",
+        })
+        for call in mock_build.call_args_list:
+            kwargs = call.kwargs
+            self.assertEqual(kwargs["delegation_cfg"], cfg)
+            self.assertEqual(kwargs["max_spawn_depth"], 2)
+            self.assertIs(kwargs["orchestrator_enabled"], True)
+            self.assertIs(kwargs["inherit_mcp_toolsets"], False)
+            self.assertIs(kwargs["child_reasoning_config_resolved"], True)
+        for call in mock_run.call_args_list:
+            self.assertEqual(call.kwargs["child_timeout"], 45.0)
+            self.assertIsNotNone(call.kwargs["approval_callback"])
+
+    @patch("tools.delegate_tool._run_single_child")
+    def test_batch_mode_accepts_json_string_tasks(self, mock_run):
+        mock_run.side_effect = [
+            {
+                "task_index": 0,
+                "status": "completed",
+                "summary": "Result A",
+                "api_calls": 2,
+                "duration_seconds": 3.0,
+            },
+            {
+                "task_index": 1,
+                "status": "completed",
+                "summary": "Result B",
+                "api_calls": 4,
+                "duration_seconds": 6.0,
+            },
+        ]
+        parent = _make_mock_parent()
+        tasks = json.dumps(
+            [
+                {"goal": "Research topic A"},
+                {"goal": "Research topic B"},
+            ]
+        )
+
+        result = json.loads(delegate_task(tasks=tasks, parent_agent=parent))
+
+        self.assertIn("results", result)
+        self.assertEqual(len(result["results"]), 2)
+        self.assertEqual(result["results"][0]["summary"], "Result A")
+        self.assertEqual(result["results"][1]["summary"], "Result B")
+
+    @patch("tools.delegate_tool._run_single_child")
+    def test_batch_mode_rejects_non_object_tasks(self, mock_run):
+        parent = _make_mock_parent()
+
+        result = json.loads(
+            delegate_task(tasks=["not a task object"], parent_agent=parent)
+        )
+
+        self.assertIn("error", result)
+        self.assertIn("Task 0 must be an object", result["error"])
+        mock_run.assert_not_called()
+
+    @patch("tools.delegate_tool._run_single_child")
+    def test_batch_mode_rejects_malformed_json_string_tasks(self, mock_run):
+        parent = _make_mock_parent()
+
+        result = json.loads(
+            delegate_task(tasks='[{"goal": "bad}', parent_agent=parent)
+        )
+
+        self.assertIn("error", result)
+        self.assertIn("could not be parsed as JSON", result["error"])
+        mock_run.assert_not_called()
 
     @patch("tools.delegate_tool._run_single_child")
     def test_batch_capped_at_3(self, mock_run):
@@ -1925,6 +2094,32 @@ class TestOrchestratorRoleSchema(unittest.TestCase):
         task_props = props["tasks"]["items"]["properties"]
         self.assertIn("role", task_props)
         self.assertEqual(task_props["role"]["enum"], ["leaf", "orchestrator"])
+
+    def test_acp_command_description_has_do_not_set_guidance(self):
+        # acp_command/acp_args descriptions must NOT bias the model toward
+        # assuming an ACP CLI (Claude, Copilot, etc.) is installed. They must
+        # carry explicit "do not set unless told" guidance so the model doesn't
+        # hallucinate ACP availability (#22013).
+        from tools.delegate_tool import DELEGATE_TASK_SCHEMA
+        props = DELEGATE_TASK_SCHEMA["parameters"]["properties"]
+
+        top_acp_desc = props["acp_command"]["description"]
+        self.assertIn("Do NOT set", top_acp_desc)
+        self.assertIn("explicitly told you", top_acp_desc)
+
+        task_props = props["tasks"]["items"]["properties"]
+        per_task_acp_desc = task_props["acp_command"]["description"]
+        self.assertIn("Do NOT set", per_task_acp_desc)
+
+    def test_acp_command_description_has_no_claude_as_example(self):
+        # Descriptions must not list 'claude' as a canonical example value —
+        # that directly primes the model to attempt Claude ACP even when it is
+        # not installed (#22013).
+        from tools.delegate_tool import DELEGATE_TASK_SCHEMA
+        props = DELEGATE_TASK_SCHEMA["parameters"]["properties"]
+        top_acp_desc = props["acp_command"]["description"].lower()
+        self.assertNotIn("e.g. 'claude'", top_acp_desc)
+        self.assertNotIn("e.g. \"claude\"", top_acp_desc)
 
 
 # Sentinel used to distinguish "role kwarg omitted" from "role=None".
