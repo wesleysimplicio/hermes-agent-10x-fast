@@ -104,6 +104,33 @@ signal.
 
 ---
 
+## Tota Agent Benchmark: Hermes Original vs Tota Agent vs OpenClaw
+
+The visuals below are built from the full benchmark report in
+[tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf). The
+backgrounds were generated with `gpt-image-2`; the benchmark values, axes,
+labels, and score overlays are rendered deterministically from the report data
+so the README images stay visually polished without changing the measured
+numbers.
+
+![GPT-image-2 Tota Agent JSON latency benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-json-latency.png)
+
+![GPT-image-2 Tota Agent memory footprint benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-memory-footprint.png)
+
+![GPT-image-2 Tota Agent message throughput benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-message-throughput.png)
+
+![GPT-image-2 Tota Agent tool call parsing benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-tool-call-parsing.png)
+
+![GPT-image-2 Tota Agent token counting benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-token-counting.png)
+
+![GPT-image-2 Tota Agent async concurrency benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-concurrency-async.png)
+
+![GPT-image-2 Tota Agent startup time benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-startup-time.png)
+
+![GPT-image-2 Tota Agent ecosystem scorecard benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-ecosystem-scorecard.png)
+
+---
+
 ## Quick Install
 
 ### Linux, macOS, WSL2, Termux
