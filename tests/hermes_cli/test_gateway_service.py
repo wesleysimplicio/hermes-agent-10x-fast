@@ -499,6 +499,25 @@ class TestLaunchdServiceRecovery:
             ["launchctl", "bootstrap", domain, str(plist_path)],
         ]
 
+    def test_gateway_service_bases_can_be_overridden(self, tmp_path, monkeypatch):
+        monkeypatch.delenv("TOTA_HOME", raising=False)
+        monkeypatch.delenv("HERMES_HOME", raising=False)
+        monkeypatch.setenv("HERMES_GATEWAY_SERVICE_BASE", "hermes2-gateway")
+        monkeypatch.setenv("HERMES_LAUNCHD_LABEL_BASE", "ai.hermes2.gateway")
+        monkeypatch.setattr(gateway_cli, "_launchd_user_home", lambda: tmp_path)
+
+        assert gateway_cli.get_service_name() == "hermes2-gateway"
+        assert gateway_cli.get_launchd_label() == "ai.hermes2.gateway"
+        assert (
+            gateway_cli.get_launchd_plist_path()
+            == tmp_path / "Library" / "LaunchAgents" / "ai.hermes2.gateway.plist"
+        )
+        plist = gateway_cli.generate_launchd_plist()
+        assert "<key>HERMES_GATEWAY_SERVICE_BASE</key>" in plist
+        assert "<string>hermes2-gateway</string>" in plist
+        assert "<key>HERMES_LAUNCHD_LABEL_BASE</key>" in plist
+        assert "<string>ai.hermes2.gateway</string>" in plist
+
     def test_launchd_start_reloads_unloaded_job_and_retries(self, tmp_path, monkeypatch):
         plist_path = tmp_path / "ai.hermes.gateway.plist"
         plist_path.write_text(gateway_cli.generate_launchd_plist(), encoding="utf-8")
