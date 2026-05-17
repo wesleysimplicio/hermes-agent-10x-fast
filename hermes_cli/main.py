@@ -106,6 +106,13 @@ def _require_tty(command_name: str) -> None:
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, str(PROJECT_ROOT))
 
+try:
+    from agent.uvloop_utils import install_uvloop_policy
+
+    install_uvloop_policy()
+except Exception:
+    pass
+
 
 # ---------------------------------------------------------------------------
 # Profile override — MUST happen before any hermes module import.

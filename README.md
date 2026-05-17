@@ -64,14 +64,32 @@ uv pip install -e ".[all,dev]"
 The benchmarked Tota Agent direction is built around fast Python plus native-extension-ready hot paths:
 
 ```bash
-uv pip install "orjson>=3.11,<4" "msgspec>=0.21,<0.23" "uvloop>=0.22,<0.24"
+uv pip install -e ".[fast]"
 ```
 
-If a local branch includes the Rust extension sources, build them with the branch's normal `maturin develop --release` flow, then verify:
+Build the Rust extension and verify the native fast path:
 
 ```bash
+PATH="$HOME/.cargo/bin:$PATH" bash scripts/install-rust.sh
 python -c "from agent._hermes_fast import HAVE_RUST; print('Rust:', HAVE_RUST)"
 ```
+
+The `fast` extra stays optional so the base install remains small. When present,
+Tota Agent uses `orjson`, `msgspec`, `uvloop`, and the Rust extension with
+Python fallbacks for locked-down or source-only environments.
+
+### Post-Benchmark Performance Patch
+
+Version `0.13.1` applies the benchmark follow-up plan:
+
+- Bytes-native JSON via `agent._fastjson.dumps_bytes()` for short payload hot paths.
+- Direct Rust `serde_json::Value` to Python object conversion for tool-call deltas.
+- Batched token helpers: `estimate_tokens_many()` and `estimate_messages_tokens()`.
+- Rust bytes variants for message-token estimation/truncation.
+- Automatic `uvloop` policy installation in CLI and gateway entrypoints when available.
+- Bounded `fast` extra dependencies to keep supply-chain risk controlled.
+
+Details: [docs/tota-benchmark-win-plan.md](docs/tota-benchmark-win-plan.md).
 
 ## Benchmark Headline
 
@@ -119,6 +137,7 @@ Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.
 | Struct decode | None | `msgspec` | None |
 | Native extension | None | Rust / PyO3 ready | None |
 | Channels measured | WhatsApp, HTTP | WhatsApp, HTTP | WhatsApp, Telegram, Discord, HTTP |
+| Channels in current checkout | WhatsApp, HTTP | Telegram, Discord, Slack, Matrix, Signal, email, SMS, API server, and more | WhatsApp, Telegram, Discord, HTTP |
 | Category | AI Agent | Optimized Python AI Agent | Multi-channel AI Gateway |
 
 ### Architecture
@@ -213,7 +232,7 @@ Lower latency is better.
 | Low memory footprint | Tota Agent | ~30 MB RSS vs ~97 MB for OpenClaw. |
 | Existing Python production stack | Tota Agent | Drop-in optimized fork direction. |
 | 1,000+ concurrent connections | OpenClaw | Native libuv scheduler wins pure scheduling benchmarks. |
-| Multi-channel out of the box | OpenClaw | More native integrations in the benchmarked surface. |
+| Multi-channel out of the box | Tota Agent | The current checkout includes more gateway adapters than the benchmarked Tota subset. |
 | Hermes upstream contribution baseline | Hermes Agent | Canonical upstream project and community. |
 
 ## Development
