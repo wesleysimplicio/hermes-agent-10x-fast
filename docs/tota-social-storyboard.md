@@ -28,6 +28,8 @@ This campaign frames Hermes Agent as Tota Agent's engineering partner and OpenCl
 | 05 | `docs/assets/tota-social/final/tota-vs-openclaw-scorecard.png` | Tota badge dominates the frame while the claw rival is shown as dizzy. | `TOTA AGENT OUTRUNS OPENCLAW` | `44/50`, `1.8x faster`, `1.9x faster` |
 | 06 | `docs/assets/tota-brand/tota-agent-og.png` | Clean launch-card version for Open Graph and link previews. | `TOTA AGENT`; `FASTER WHERE PRODUCTION AGENTS FEEL IT` | `44/50`, `~50 ms`, `~30 MB` |
 
+Ready-to-upload JPEG exports live in `docs/assets/tota-social/linkedin-upload/`.
+
 ## Benchmark Claims
 
 | Metric | Tota Agent | OpenClaw | Campaign Line |
