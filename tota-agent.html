@@ -4,24 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tota Agent by Hermes Agent</title>
-  <meta name="description" content="Tota Agent is a Brazilian-fast Hermes Agent fork with benchmark comparisons against Hermes Original and OpenClaw.">
+  <meta name="description" content="Tota Agent is a Hermes Agent partner fork with benchmark comparisons against Hermes Original and OpenClaw.">
   <meta property="og:title" content="Tota Agent by Hermes Agent">
   <meta property="og:description" content="Hermes-compatible Python agent optimized for JSON, async I/O, tool-call parsing, and cold starts.">
   <meta property="og:image" content="docs/assets/tota-brand/tota-agent-og.png">
-  <link rel="icon" href="docs/assets/tota-brand/generated/gpt-image-2-tota-agent-emblem.png">
+  <link rel="icon" href="docs/assets/tota-brand/tota-agent-logo-transparent.png">
   <style>
     :root {
       color-scheme: dark;
-      --ink: #f7fbff;
-      --muted: #b7c6d8;
-      --quiet: #7f91a8;
-      --bg: #050914;
-      --panel: #091121;
+      --ink: #f7f3df;
+      --muted: #ded3a9;
+      --quiet: #a79c76;
+      --bg: #1a2115;
+      --panel: #24301f;
       --line: rgba(255,255,255,.14);
-      --green: #19d27f;
-      --gold: #ffe15a;
-      --blue: #32b7ff;
-      --rose: #ff5d6c;
+      --green: #3f4b2f;
+      --gold: #c49a28;
+      --blue: #f7f3df;
+      --rose: #c49a28;
       --shadow: 0 24px 80px rgba(0,0,0,.38);
     }
 
@@ -37,10 +37,11 @@
       color: var(--ink);
       font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at 12% 8%, rgba(25,210,127,.22), transparent 28rem),
-        radial-gradient(circle at 88% 14%, rgba(50,183,255,.18), transparent 30rem),
-        linear-gradient(180deg, #03060d 0%, #06101f 38%, #050914 100%);
+        radial-gradient(circle at 12% 8%, rgba(196,154,40,.22), transparent 28rem),
+        radial-gradient(circle at 88% 14%, rgba(247,243,223,.12), transparent 30rem),
+        linear-gradient(180deg, #11160e 0%, #1a2115 38%, #10160d 100%);
       line-height: 1.55;
+      overflow-x: hidden;
     }
 
     a { color: inherit; }
@@ -61,6 +62,7 @@
 
     .nav img {
       width: min(260px, 48vw);
+      max-width: 100%;
       display: block;
     }
 
@@ -88,9 +90,9 @@
       padding: 92px clamp(22px, 7vw, 104px) 58px;
       overflow: hidden;
       background-image:
-        radial-gradient(circle at 78% 46%, rgba(50,183,255,.18), transparent 22rem),
-        linear-gradient(90deg, rgba(3,6,13,.96), rgba(3,6,13,.74) 48%, rgba(3,6,13,.36)),
-        url("docs/assets/tota-brand/generated/gpt-image-2-tota-agent-emblem.png");
+        radial-gradient(circle at 78% 46%, rgba(196,154,40,.2), transparent 22rem),
+        linear-gradient(90deg, rgba(26,33,21,.96), rgba(26,33,21,.74) 48%, rgba(26,33,21,.36)),
+        url("docs/assets/tota-brand/tota-agent-logo-transparent.png");
       background-size: cover, cover, min(760px, 82vw);
       background-repeat: no-repeat;
       background-position: center, center, right 8vw center;
@@ -102,8 +104,8 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(120deg, transparent 0 46%, rgba(25,210,127,.26) 46.2% 46.55%, transparent 46.8%),
-        linear-gradient(128deg, transparent 0 55%, rgba(50,183,255,.34) 55.2% 55.55%, transparent 55.9%);
+        linear-gradient(120deg, transparent 0 46%, rgba(196,154,40,.26) 46.2% 46.55%, transparent 46.8%),
+        linear-gradient(128deg, transparent 0 55%, rgba(247,243,223,.26) 55.2% 55.55%, transparent 55.9%);
       pointer-events: none;
       mix-blend-mode: screen;
     }
@@ -174,7 +176,7 @@
     }
 
     .button.primary {
-      color: #03100b;
+      color: #11160e;
       background: linear-gradient(90deg, var(--green), var(--gold));
       border-color: transparent;
     }
@@ -187,7 +189,7 @@
     .section.alt {
       background:
         linear-gradient(180deg, rgba(255,255,255,.03), transparent),
-        radial-gradient(circle at 20% 20%, rgba(255,225,90,.08), transparent 24rem);
+        radial-gradient(circle at 20% 20%, rgba(196,154,40,.12), transparent 24rem);
     }
 
     .section-head {
@@ -224,7 +226,7 @@
     .metric,
     .tile {
       border: 1px solid var(--line);
-      background: rgba(7,16,32,.78);
+      background: rgba(31,40,26,.78);
       border-radius: 8px;
       padding: 22px;
       box-shadow: var(--shadow);
@@ -262,9 +264,9 @@
       padding: 22px;
       overflow: auto;
       border-radius: 8px;
-      border: 1px solid rgba(25,210,127,.26);
-      background: #020711;
-      color: #dffbf0;
+      border: 1px solid rgba(196,154,40,.36);
+      background: #11160e;
+      color: #f7f3df;
       font: 15px/1.65 "SF Mono", Menlo, Consolas, monospace;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), var(--shadow);
     }
@@ -277,7 +279,7 @@
 
     .copy {
       cursor: pointer;
-      color: #06100b;
+      color: #11160e;
       border: 0;
       border-radius: 8px;
       padding: 10px 14px;
@@ -319,7 +321,7 @@
       overflow: auto;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: rgba(7,16,32,.74);
+      background: rgba(31,40,26,.74);
       box-shadow: var(--shadow);
       margin-top: 18px;
     }
@@ -353,7 +355,7 @@
 
     tr:last-child td { border-bottom: 0; }
 
-    .winner { color: var(--green); }
+    .winner { color: var(--gold); }
     .warn { color: var(--gold); }
     .loss { color: var(--rose); }
 
@@ -365,7 +367,7 @@
     }
 
     .quote {
-      border-left: 5px solid var(--green);
+      border-left: 5px solid var(--gold);
       padding-left: 18px;
       color: #dce8f6;
       font-size: 22px;
@@ -375,7 +377,7 @@
     footer {
       padding: 54px clamp(22px, 6vw, 92px);
       color: var(--quiet);
-      background: #02060d;
+      background: #11160e;
     }
 
     @media (max-width: 920px) {
@@ -399,7 +401,7 @@
 </head>
 <body>
   <nav class="nav" aria-label="Primary navigation">
-    <a href="#top" aria-label="Tota Agent home"><img src="docs/assets/tota-brand/tota-agent-logo.svg" alt="Tota Agent by Hermes Agent"></a>
+    <a href="#top" aria-label="Tota Agent home"><img src="docs/assets/tota-brand/tota-agent-wordmark.png" alt="Tota Agent by Hermes Agent"></a>
     <div class="nav-links">
       <a href="#install">Install</a>
       <a href="#benchmark">Benchmark</a>
@@ -410,9 +412,9 @@
 
   <header id="top" class="hero">
     <div class="hero-content">
-      <span class="eyebrow">By Hermes Agent</span>
+      <span class="eyebrow">by Hermes Agent</span>
       <h1>Tota Agent</h1>
-      <p>Brazilian-fast AI automation: a Hermes Agent fork tuned for lower JSON latency, faster message throughput, Rust-ready tool parsing, and a sharper global creator brand.</p>
+      <p>Whoever is Tota, will never be Claw. A Hermes Agent partner fork tuned for lower JSON latency, faster production message throughput, Rust-ready tool parsing, and a sharper launch identity.</p>
       <div class="actions">
         <a class="button primary" href="#install">Install now</a>
         <a class="button" href="#benchmark">See benchmark</a>
@@ -425,15 +427,15 @@
     <section class="section" id="identity">
       <div class="section-head">
         <div>
-          <h2>Creator Energy, Agent Speed</h2>
-          <p>The logo turns a Brazil-to-global streaming story into a technical mark: hillside geometry becomes circuit paths, the bridge points outward, and the Hermes wing keeps the upstream lineage visible.</p>
+          <h2>Tota + Hermes, Claw Behind</h2>
+          <p>The identity frames Hermes Agent as the trusted engineering partner and OpenClaw as a fictional claw monster rival. The campaign stays aggressive, but every performance claim is tied to the benchmark tables.</p>
         </div>
       </div>
       <div class="brand-lockup">
         <img src="docs/assets/tota-brand/tota-agent-logo.png" alt="Tota Agent logo lockup">
         <div class="tile">
-          <p class="quote">Not a portrait. Not a celebrity endorsement. A Tota-inspired brand direction for a Hermes-compatible performance fork.</p>
-          <p>Public reference points: Tota MC's Streamer University visibility in the US, Rocinha-to-global creator momentum, and the improvised live culture that made the story travel beyond language.</p>
+          <p class="quote">Logo: Tota Agent. Slogan: Whoever is Tota, will never be Claw.</p>
+          <p>Credits: by Hermes Agent. Creator: @wesleysimplic. OpenClaw is shown only as a fictional monster symbol, not an exact logo reproduction.</p>
         </div>
       </div>
     </section>
@@ -481,7 +483,15 @@ uv pip install -e ".[all,dev]"
         <div class="metric"><b>454k/s</b><span>Medium message pipeline throughput</span></div>
         <div class="metric"><b>~50 ms</b><span>Cold start, serverless-friendly</span></div>
       </div>
-      <div class="gallery" style="margin-top: 34px;">
+      <h3>Social Storyboard</h3>
+      <div class="gallery" style="margin-top: 18px;">
+        <figure><img src="docs/assets/tota-social/final/storyboard-01-tota-hermes-vs-openclaw.png" alt="Tota Agent and Hermes Agent versus OpenClaw monster"><figcaption>Tota + Hermes</figcaption></figure>
+        <figure><img src="docs/assets/tota-social/final/storyboard-02-benchmark-table.png" alt="Tota Agent benchmark storyboard table"><figcaption>Benchmark table</figcaption></figure>
+        <figure><img src="docs/assets/tota-social/final/storyboard-03-slogan-poster.png" alt="Tota Agent slogan poster"><figcaption>Slogan poster</figcaption></figure>
+        <figure><img src="docs/assets/tota-social/final/tota-vs-openclaw-drag-race.png" alt="Tota Agent drag race against OpenClaw"><figcaption>Cold start race</figcaption></figure>
+      </div>
+      <h3>Benchmark Charts</h3>
+      <div class="gallery" style="margin-top: 18px;">
         <figure><img src="docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-json-latency.png" alt="JSON latency chart"><figcaption>JSON latency</figcaption></figure>
         <figure><img src="docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-memory-footprint.png" alt="Memory footprint chart"><figcaption>Memory footprint</figcaption></figure>
         <figure><img src="docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-message-throughput.png" alt="Message throughput chart"><figcaption>Message pipeline</figcaption></figure>
@@ -645,14 +655,14 @@ uv pip install -e ".[all,dev]"
       <div class="gallery">
         <figure><img src="docs/assets/tota-brand/tota-agent-logo.png" alt="Tota Agent PNG logo"><figcaption>PNG logo</figcaption></figure>
         <figure><img src="docs/assets/tota-brand/tota-agent-og.png" alt="Tota Agent open graph image"><figcaption>Open graph image</figcaption></figure>
-        <figure><img src="docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-memory-footprint.png" alt="Memory benchmark"><figcaption>Memory benchmark</figcaption></figure>
-        <figure><img src="docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-startup-time.png" alt="Startup benchmark"><figcaption>Startup benchmark</figcaption></figure>
+        <figure><img src="docs/assets/tota-social/final/storyboard-01-tota-hermes-vs-openclaw.png" alt="Storyboard social card"><figcaption>Storyboard 01</figcaption></figure>
+        <figure><img src="docs/assets/tota-social/final/storyboard-02-benchmark-table.png" alt="Benchmark social card"><figcaption>Storyboard 02</figcaption></figure>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>Tota Agent is a fork brand built on Hermes Agent. Updated benchmark source: <a href="tota_agent_benchmark_report.pdf">tota_agent_benchmark_report.pdf</a>. Logo mark generated with GPT-image-2 and composed with deterministic typography for exact text.</p>
+    <p>Tota Agent is a fork brand built with Hermes Agent as partner. Updated benchmark source: <a href="tota_agent_benchmark_report.pdf">tota_agent_benchmark_report.pdf</a>. Logo and storyboard backgrounds generated with GPT-image-2; benchmark numbers and text overlays are deterministic.</p>
   </footer>
 
   <script>
