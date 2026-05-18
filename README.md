@@ -23,7 +23,9 @@ Credits: **by Hermes Agent**. Creator: **@wesleysimplic**.
 
 - [Standalone HTML site](tota-agent.html)
 - [Social storyboard](docs/tota-social-storyboard.md)
-- [Updated benchmark PDF](tota_agent_benchmark_report.pdf) - May 17, 2026 launch edition with the new brand, site, visuals, and current `.venv` validation.
+- [Hermes 0.14.0 side-by-side status](docs/tota-benchmark-hermes-0.14.0.md)
+- [Daily Hermes sync routine](docs/tota-hermes-daily-update.md)
+- [Current benchmark PDF](tota_agent_benchmark_report.pdf) - May 17, 2026 launch edition. The Hermes 0.14.0 side-by-side PDF refresh is still blocked on the browser-console row.
 - [SVG logo](docs/assets/tota-brand/tota-agent-logo.svg)
 - [PNG logo](docs/assets/tota-brand/tota-agent-logo.png)
 - [Transparent PNG logo](docs/assets/tota-brand/tota-agent-logo-transparent.png)
@@ -59,6 +61,18 @@ uv pip install -e ".[all,dev]"
 ./hermes
 ```
 
+### Windows (native, PowerShell)
+
+Native Windows is early beta. For the native installer, open PowerShell and run:
+
+```powershell
+irm https://raw.githubusercontent.com/wesleysimplicio/tota-agent/main/scripts/install.ps1 | iex
+```
+
+This uses [`scripts/install.ps1`](scripts/install.ps1) and is the supported
+native-Windows install path for this fork. If you want the most battle-tested
+Windows setup today, use WSL2 and follow the POSIX install flow above.
+
 ### From This Checkout
 
 ```bash
@@ -87,7 +101,24 @@ The `fast` extra stays optional so the base install remains small. When present,
 Tota Agent uses `orjson`, `msgspec`, `uvloop`, and the Rust extension with
 Python fallbacks for locked-down or source-only environments.
 
+### Daily Hermes Sync
+
+Tota Agent can run a daily sync routine that updates the local environment,
+runs `hermes update`, merges the latest `NousResearch/hermes-agent` core, and
+keeps Tota's speed customizations under validation before pushing a dated branch:
+
+```bash
+python3 scripts/install_tota_hermes_daily_update_launchd.py --hour 6 --minute 30
+```
+
+See [docs/tota-hermes-daily-update.md](docs/tota-hermes-daily-update.md).
+
 ### Post-Benchmark Performance Patch
+
+Version `0.13.4` adds the daily Hermes upstream sync routine. It keeps the
+machine's `uv` and `python@3.14` current, rebuilds an isolated checkout with
+Python `3.14.5`, runs `hermes update`, merges upstream Hermes, validates Tota's
+performance customizations, and pushes a dated sync branch when the run is clean.
 
 Version `0.13.3` refreshes the Tota Agent identity around the approved logo,
 the "Whoever is Tota, will never be Claw" campaign line, and a GPT-image-2
@@ -112,6 +143,11 @@ Details: [docs/tota-benchmark-win-plan.md](docs/tota-benchmark-win-plan.md).
 
 ## Benchmark Headline
 
+The repo now ships a dedicated side-by-side harness for upstream stock Hermes `0.14.0`:
+[`scripts/benchmark_tota_vs_hermes_0140.py`](scripts/benchmark_tota_vs_hermes_0140.py).
+The latest measured status lives in [docs/tota-benchmark-hermes-0.14.0.md](docs/tota-benchmark-hermes-0.14.0.md).
+That refresh is not in `tota_agent_benchmark_report.pdf` yet because the local host still lacks the browser-console parity row.
+
 | Metric | Hermes Original | Tota Agent | OpenClaw | Winner |
 | --- | ---: | ---: | ---: | --- |
 | Total score | 30 / 50 | 44 / 50 | 36 / 50 | Tota Agent |
@@ -124,7 +160,7 @@ Details: [docs/tota-benchmark-win-plan.md](docs/tota-benchmark-win-plan.md).
 | Cold start | ~52 ms | ~50 ms | ~280 ms | Tota Agent |
 | RSS memory | ~30 MB | ~30 MB | ~97 MB | Python variants |
 
-Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf), updated May 17, 2026 with the Tota Agent launch package and current Apple Silicon `.venv` validation.
+Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf) for the May 17, 2026 launch edition, plus [docs/tota-benchmark-hermes-0.14.0.md](docs/tota-benchmark-hermes-0.14.0.md) for the Hermes `0.14.0` side-by-side refresh status and blocker.
 
 ## Benchmark Visuals
 
