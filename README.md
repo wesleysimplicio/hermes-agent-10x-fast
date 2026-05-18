@@ -1,40 +1,39 @@
 <p align="center">
-  <img src="docs/assets/tota-brand/tota-agent-wordmark.png" alt="Tota Agent by Hermes Agent" width="100%">
+  <img src="docs/assets/tota-brand/tota-agent-vs-openclaw-banner.png" alt="Tota Agent by Hermes Agent versus OpenClaw benchmark banner" width="100%">
 </p>
 
 # Tota Agent
 
 <p align="center">
-  <a href="tota-agent.html"><img src="https://img.shields.io/badge/Site-tota--agent.html-3F4B2F?style=for-the-badge" alt="Tota Agent HTML site"></a>
-  <a href="tota_agent_benchmark_report.pdf"><img src="https://img.shields.io/badge/Benchmark-PDF-C49A28?style=for-the-badge" alt="Benchmark PDF"></a>
-  <a href="https://github.com/wesleysimplicio/tota-agent"><img src="https://img.shields.io/badge/Fork-wesleysimplicio%2Ftota--agent-1A2115?style=for-the-badge&logo=github" alt="Tota Agent fork"></a>
+  <a href="tota-agent.html"><img src="https://img.shields.io/badge/Site-tota--agent.html-19D27F?style=for-the-badge" alt="Tota Agent HTML site"></a>
+  <a href="tota_agent_benchmark_report.pdf"><img src="https://img.shields.io/badge/Benchmark-PDF-FFE15A?style=for-the-badge" alt="Benchmark PDF"></a>
+  <a href="https://github.com/wesleysimplicio/tota-agent"><img src="https://img.shields.io/badge/Fork-wesleysimplicio%2Ftota--agent-32B7FF?style=for-the-badge&logo=github" alt="Tota Agent fork"></a>
   <a href="https://x.com/wesleysimplic"><img src="https://img.shields.io/badge/X-@wesleysimplic-000000?style=for-the-badge&logo=x" alt="Wesley Simplicio on X"></a>
-  <a href="https://github.com/NousResearch/hermes-agent"><img src="https://img.shields.io/badge/Partner-Hermes%20Agent-C49A28?style=for-the-badge" alt="Hermes Agent partner"></a>
+  <a href="https://github.com/NousResearch/hermes-agent"><img src="https://img.shields.io/badge/Upstream-Hermes%20Agent-FF5D6C?style=for-the-badge" alt="Hermes Agent upstream"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
-**Tota Agent is a Hermes Agent partner fork tuned for low-latency JSON, faster production message flow, typed tool-call parsing, and Rust-ready hot paths.** It keeps the Hermes Agent operating model while giving this fork its own army-green/dark-mustard identity, benchmark story, and social launch package.
+<p align="center">
+  <strong>Once you're Tota, you'll never be OpenClaw.</strong>
+</p>
 
-Campaign line: **Whoever is Tota, will never be Claw.** Hermes Agent is always framed as the engineering partner. OpenClaw is represented only as a fictional claw monster rival in the campaign art, with benchmark claims tied to the tables below.
+**Tota Agent is a Brazilian-fast fork of [Hermes Agent](https://github.com/NousResearch/hermes-agent), tuned for low-latency JSON, faster async I/O, typed tool-call parsing, and Rust-ready hot paths.** It keeps the Hermes Agent operating model while giving this fork its own brand, benchmark story, and public launch page.
 
-Credits: **by Hermes Agent**. Creator: **@wesleysimplic**.
+The visual identity is inspired by Tota MC's public Brazil-to-US streaming rise: creator energy, Rocinha-to-global momentum, improvised live culture, and cross-language charisma. Public references include the Streamer University coverage by [Times of India](https://timesofindia.indiatimes.com/sports/esports/news/who-is-tota-mc-meet-streamer-universitys-viral-brazilian-star/articleshow/121433457.cms) and the Portuguese profile syndicated by [Rede NXT](https://www.redenxt.com.br/noticia/5281/pop-amp-arte/quem-e-tota-mc-influenciador-da-rocinha-que-vendia-bala-no-sinal-e-hoje-tem-6-milhoes-de-seguidores-com-fas-como-snoop-dogg-e-drake.html). The core geometric logo does not use a portrait or imply official endorsement; the benchmark battle cards also include the supplied circular Tota mark for campaign use.
 
 ## Launch Assets
 
 - [Standalone HTML site](tota-agent.html)
-- [Social storyboard](docs/tota-social-storyboard.md)
-- [Hermes 0.14.0 side-by-side status](docs/tota-benchmark-hermes-0.14.0.md)
+- [Tota vs OpenClaw launch banner PNG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.png)
+- [Tota vs OpenClaw launch banner SVG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.svg)
+- [Benchmark battle cards](docs/assets/tota-benchmark/battles/)
+- [Hermes 0.14.0 side-by-side report](docs/tota-benchmark-hermes-0.14.0.md)
 - [Daily Hermes sync routine](docs/tota-hermes-daily-update.md)
-- [Current benchmark PDF](tota_agent_benchmark_report.pdf) - May 17, 2026 launch edition. The Hermes 0.14.0 side-by-side PDF refresh is still blocked on the browser-console row.
+- [Updated benchmark PDF](tota_agent_benchmark_report.pdf) - May 18, 2026 edition with the Hermes 0.14.0 refresh, brand, site, visuals, and current `.venv` validation.
 - [SVG logo](docs/assets/tota-brand/tota-agent-logo.svg)
 - [PNG logo](docs/assets/tota-brand/tota-agent-logo.png)
-- [Transparent PNG logo](docs/assets/tota-brand/tota-agent-logo-transparent.png)
-- [Wordmark](docs/assets/tota-brand/tota-agent-wordmark.png)
 - [Open graph image](docs/assets/tota-brand/tota-agent-og.png)
 - [GPT-image-2 emblem source](docs/assets/tota-brand/generated/gpt-image-2-tota-agent-emblem.png)
-- [Storyboard frame 1](docs/assets/tota-social/final/storyboard-01-tota-hermes-vs-openclaw.png)
-- [Storyboard frame 2](docs/assets/tota-social/final/storyboard-02-benchmark-table.png)
-- [Storyboard frame 3](docs/assets/tota-social/final/storyboard-03-slogan-poster.png)
 
 ## Why Tota Agent
 
@@ -43,8 +42,8 @@ Credits: **by Hermes Agent**. Creator: **@wesleysimplic**.
 | Keep Hermes compatibility | Forks Hermes Agent instead of replacing its architecture. |
 | Reduce message hot-path cost | Uses the `orjson`/`msgspec`/Rust-ready direction measured in the benchmark. |
 | Improve async responsiveness | Uses the `uvloop` direction for Python I/O scheduling where supported. |
-| Tell a sharper product story | Adds Tota Agent branding, launch site, storyboard, and benchmark visuals. |
-| Compare against alternatives | Includes measured comparisons with Hermes Original and OpenClaw, while keeping Hermes as the partner. |
+| Tell a sharper product story | Adds Tota Agent branding, launch site, and benchmark visuals. |
+| Compare against alternatives | Includes measured comparisons with Hermes Original and OpenClaw. |
 
 ## Install
 
@@ -61,17 +60,7 @@ uv pip install -e ".[all,dev]"
 ./hermes
 ```
 
-### Windows (native, PowerShell)
-
-Native Windows is early beta. For the native installer, open PowerShell and run:
-
-```powershell
-irm https://raw.githubusercontent.com/wesleysimplicio/tota-agent/main/scripts/install.ps1 | iex
-```
-
-This uses [`scripts/install.ps1`](scripts/install.ps1) and is the supported
-native-Windows install path for this fork. If you want the most battle-tested
-Windows setup today, use WSL2 and follow the POSIX install flow above.
+Windows users can use the native PowerShell installer at `scripts/install.ps1`.
 
 ### From This Checkout
 
@@ -115,15 +104,13 @@ See [docs/tota-hermes-daily-update.md](docs/tota-hermes-daily-update.md).
 
 ### Post-Benchmark Performance Patch
 
-Version `0.13.4` adds the daily Hermes upstream sync routine. It keeps the
-machine's `uv` and `python@3.14` current, rebuilds an isolated checkout with
-Python `3.14.5`, runs `hermes update`, merges upstream Hermes, validates Tota's
-performance customizations, and pushes a dated sync branch when the run is clean.
+Version `0.14.2` adds the Hermes 0.14.0 side-by-side benchmark refresh, the
+daily Hermes sync routine, and the report generation dependency needed to
+regenerate `tota_agent_benchmark_report.pdf`.
 
-Version `0.13.3` refreshes the Tota Agent identity around the approved logo,
-the "Whoever is Tota, will never be Claw" campaign line, and a GPT-image-2
-storyboard where Hermes Agent is the partner and OpenClaw is a fictional claw
-monster rival.
+Version `0.13.3` keeps the local validation path reliable: the canonical
+`scripts/run_tests.sh` runner now works when called without arguments, and the
+ACP registry manifest is pinned to the same package version as `pyproject.toml`.
 
 Version `0.13.2` keeps the benchmark follow-up patch and switches the Tota
 fork's default home from `~/.hermes` to `~/.tota` for new installs. `TOTA_HOME`
@@ -143,11 +130,6 @@ Details: [docs/tota-benchmark-win-plan.md](docs/tota-benchmark-win-plan.md).
 
 ## Benchmark Headline
 
-The repo now ships a dedicated side-by-side harness for upstream stock Hermes `0.14.0`:
-[`scripts/benchmark_tota_vs_hermes_0140.py`](scripts/benchmark_tota_vs_hermes_0140.py).
-The latest measured status lives in [docs/tota-benchmark-hermes-0.14.0.md](docs/tota-benchmark-hermes-0.14.0.md).
-That refresh is not in `tota_agent_benchmark_report.pdf` yet because the local host still lacks the browser-console parity row.
-
 | Metric | Hermes Original | Tota Agent | OpenClaw | Winner |
 | --- | ---: | ---: | ---: | --- |
 | Total score | 30 / 50 | 44 / 50 | 36 / 50 | Tota Agent |
@@ -160,19 +142,36 @@ That refresh is not in `tota_agent_benchmark_report.pdf` yet because the local h
 | Cold start | ~52 ms | ~50 ms | ~280 ms | Tota Agent |
 | RSS memory | ~30 MB | ~30 MB | ~97 MB | Python variants |
 
-Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf) for the May 17, 2026 launch edition, plus [docs/tota-benchmark-hermes-0.14.0.md](docs/tota-benchmark-hermes-0.14.0.md) for the Hermes `0.14.0` side-by-side refresh status and blocker.
+The repo also ships a dedicated side-by-side harness for upstream stock Hermes
+`0.14.0`: [`scripts/benchmark_tota_vs_hermes_0140.py`](scripts/benchmark_tota_vs_hermes_0140.py).
+The latest measured status lives in [docs/tota-benchmark-hermes-0.14.0.md](docs/tota-benchmark-hermes-0.14.0.md)
+and was folded into the refreshed PDF.
+
+Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf), updated May 18, 2026 with the Tota Agent launch package, Hermes 0.14.0 side-by-side data, and current Apple Silicon `.venv` validation.
+
+## Benchmark Battle Cards
+
+These shareable comparison cards turn the report's headline battles into a Tota Agent vs Hermes Agent vs OpenClaw visual campaign. They are generated by [scripts/generate_tota_battle_cards.py](scripts/generate_tota_battle_cards.py) from the benchmark values above.
+
+![Tota Agent final scoreboard battle card](docs/assets/tota-benchmark/battles/00-scoreboard.png)
+
+![Tota Agent large JSON dumps battle card](docs/assets/tota-benchmark/battles/01-json-dumps-large.png)
+
+![Tota Agent large JSON loads battle card](docs/assets/tota-benchmark/battles/02-json-loads-large.png)
+
+![Tota Agent medium message pipeline battle card](docs/assets/tota-benchmark/battles/03-medium-message-pipeline.png)
+
+![Tota Agent medium message throughput battle card](docs/assets/tota-benchmark/battles/04-medium-message-throughput.png)
+
+![Tota Agent tool-call typed parse battle card](docs/assets/tota-benchmark/battles/05-tool-call-typed-parse.png)
+
+![Tota Agent async 1000 tasks battle card](docs/assets/tota-benchmark/battles/06-async-1000-tasks.png)
+
+![Tota Agent cold start battle card](docs/assets/tota-benchmark/battles/07-cold-start.png)
+
+![Tota Agent RSS memory battle card](docs/assets/tota-benchmark/battles/08-rss-memory.png)
 
 ## Benchmark Visuals
-
-### Social Storyboard
-
-![Tota Agent and Hermes Agent versus OpenClaw monster](docs/assets/tota-social/final/storyboard-01-tota-hermes-vs-openclaw.png)
-
-![Tota Agent benchmark storyboard table](docs/assets/tota-social/final/storyboard-02-benchmark-table.png)
-
-![Tota Agent slogan poster](docs/assets/tota-social/final/storyboard-03-slogan-poster.png)
-
-### Benchmark Charts
 
 ![Tota Agent JSON latency benchmark](docs/assets/tota-benchmark/generated/gpt-image-2-tota-benchmark-json-latency.png)
 

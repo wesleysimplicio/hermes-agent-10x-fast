@@ -1170,28 +1170,33 @@ def _emergency_cleanup_all_sessions():
         return
     _cleanup_done = True
 
-    # Clean up this process's own sessions first, so their owner_pid files
-    # are removed before the reaper scans.
-    if _active_sessions:
-        logger.info("Emergency cleanup: closing %s active session(s)...",
-                    len(_active_sessions))
-        try:
-            cleanup_all_browsers()
-        except Exception as e:
-            logger.error("Emergency cleanup error: %s", e)
-        finally:
-            with _cleanup_lock:
-                _active_sessions.clear()
-                _session_last_activity.clear()
-                _recording_sessions.clear()
-
-    # Sweep orphans from other crashed hermes processes.  Safe even if we
-    # never used the browser — uses owner_pid liveness to avoid reaping
-    # daemons owned by other live hermes processes.
+    raise_exceptions = logging.raiseExceptions
+    logging.raiseExceptions = False
     try:
-        _reap_orphaned_browser_sessions()
-    except Exception as e:
-        logger.debug("Orphan reap on exit failed: %s", e)
+        # Clean up this process's own sessions first, so their owner_pid files
+        # are removed before the reaper scans.
+        if _active_sessions:
+            logger.info("Emergency cleanup: closing %s active session(s)...",
+                        len(_active_sessions))
+            try:
+                cleanup_all_browsers()
+            except Exception as e:
+                logger.error("Emergency cleanup error: %s", e)
+            finally:
+                with _cleanup_lock:
+                    _active_sessions.clear()
+                    _session_last_activity.clear()
+                    _recording_sessions.clear()
+
+        # Sweep orphans from other crashed hermes processes.  Safe even if we
+        # never used the browser — uses owner_pid liveness to avoid reaping
+        # daemons owned by other live hermes processes.
+        try:
+            _reap_orphaned_browser_sessions()
+        except Exception as e:
+            logger.debug("Orphan reap on exit failed: %s", e)
+    finally:
+        logging.raiseExceptions = raise_exceptions
 
 
 # Register cleanup via atexit only.  Previous versions installed SIGINT/SIGTERM
@@ -1631,11 +1636,14 @@ def _get_session_info(task_id: Optional[str] = None) -> Dict[str, str]:
     if task_id is None:
         task_id = "default"
 
-    # Start the cleanup thread if not running (handles inactivity timeouts)
-    _start_browser_cleanup_thread()
+    # Start the cleanup thread if not running (handles inactivity timeouts).
+    # During atexit cleanup, avoid spawning new daemon threads or logging to
+    # streams that test runners may already have closed.
+    if not _cleanup_done:
+        _start_browser_cleanup_thread()
 
-    # Update activity timestamp for this session
-    _update_session_activity(task_id)
+        # Update activity timestamp for this session
+        _update_session_activity(task_id)
 
     with _cleanup_lock:
         # Check if we already have a session for this task
