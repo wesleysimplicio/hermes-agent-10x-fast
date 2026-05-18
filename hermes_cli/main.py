@@ -325,6 +325,17 @@ if _should_run_agent_side_effects():
     except Exception:
         pass  # best-effort — agent works fine without the mapper
 
+    # Installed users should see Tota releases the same way modern CLIs do:
+    # when a newer release exists, ask once per day whether to update.
+    try:
+        from hermes_cli.tota_update_prompt import maybe_prompt_for_tota_update as _maybe_prompt_for_tota_update
+
+        _maybe_prompt_for_tota_update()
+    except SystemExit:
+        raise
+    except Exception:
+        pass  # best-effort — never block the agent over release checks
+
 # Apply IPv4 preference early, before any HTTP clients are created.
 try:
     from hermes_cli.config import load_config as _load_config_early

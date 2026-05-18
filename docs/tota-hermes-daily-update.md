@@ -27,6 +27,11 @@ The routine:
 8. Commits and pushes a dated `codex/tota-hermes-daily-*` branch when all
    checks pass.
 
+Installed users also get a lighter interactive path: when a newer Tota GitHub
+Release exists, agent-starting CLI commands ask whether to update now. Operators
+can suppress that prompt with `TOTA_SKIP_UPDATE_PROMPT=1` or
+`TOTA_UPDATE_PROMPT=0`.
+
 If a merge conflict happens, the routine stops and writes the conflicted file
 list to:
 

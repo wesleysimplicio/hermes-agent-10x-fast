@@ -104,6 +104,11 @@ See [docs/tota-hermes-daily-update.md](docs/tota-hermes-daily-update.md).
 
 ### Post-Benchmark Performance Patch
 
+Version `0.14.3` adds the installed-user self-update prompt. Tota now checks
+the latest GitHub Release on interactive agent startup and asks before running
+the project update path, while keeping the daily Hermes sync routine for
+operator automation.
+
 Version `0.14.2` adds the Hermes 0.14.0 side-by-side benchmark refresh, the
 daily Hermes sync routine, and the report generation dependency needed to
 regenerate `tota_agent_benchmark_report.pdf`.
