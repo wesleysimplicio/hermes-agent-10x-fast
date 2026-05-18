@@ -189,4 +189,6 @@ def test_propagates_subprocess_error(monkeypatch, fake_project):
 
     status = auto_mapper.maybe_map_project(fake_project)
     assert status["ran"] is False
-    assert "spawn-error" in status["reason"]
+    reason = status["reason"]
+    assert isinstance(reason, str)
+    assert "spawn-error" in reason

@@ -36,6 +36,7 @@ SKILL_SCRIPT = (
 def mapper_module():
     """Load the skill's map_project.py as a module under the alias ``mp``."""
     spec = importlib.util.spec_from_file_location("tota_map_project", SKILL_SCRIPT)
+    assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     sys.modules["tota_map_project"] = module
     spec.loader.exec_module(module)
