@@ -27,7 +27,9 @@ The visual identity is inspired by Tota MC's public Brazil-to-US streaming rise:
 - [Tota vs OpenClaw launch banner PNG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.png)
 - [Tota vs OpenClaw launch banner SVG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.svg)
 - [Benchmark battle cards](docs/assets/tota-benchmark/battles/)
-- [Updated benchmark PDF](tota_agent_benchmark_report.pdf) - May 17, 2026 launch edition with the new brand, site, visuals, and current `.venv` validation.
+- [Hermes 0.14.0 side-by-side report](docs/tota-benchmark-hermes-0.14.0.md)
+- [Daily Hermes sync routine](docs/tota-hermes-daily-update.md)
+- [Updated benchmark PDF](tota_agent_benchmark_report.pdf) - May 18, 2026 edition with the Hermes 0.14.0 refresh, brand, site, visuals, and current `.venv` validation.
 - [SVG logo](docs/assets/tota-brand/tota-agent-logo.svg)
 - [PNG logo](docs/assets/tota-brand/tota-agent-logo.png)
 - [Open graph image](docs/assets/tota-brand/tota-agent-og.png)
@@ -88,7 +90,23 @@ The `fast` extra stays optional so the base install remains small. When present,
 Tota Agent uses `orjson`, `msgspec`, `uvloop`, and the Rust extension with
 Python fallbacks for locked-down or source-only environments.
 
+### Daily Hermes Sync
+
+Tota Agent can run a daily sync routine that updates the local environment,
+runs `hermes update`, merges the latest `NousResearch/hermes-agent` core, and
+keeps Tota's speed customizations under validation before pushing a dated branch:
+
+```bash
+python3 scripts/install_tota_hermes_daily_update_launchd.py --hour 6 --minute 30
+```
+
+See [docs/tota-hermes-daily-update.md](docs/tota-hermes-daily-update.md).
+
 ### Post-Benchmark Performance Patch
+
+Version `0.14.2` adds the Hermes 0.14.0 side-by-side benchmark refresh, the
+daily Hermes sync routine, and the report generation dependency needed to
+regenerate `tota_agent_benchmark_report.pdf`.
 
 Version `0.13.3` keeps the local validation path reliable: the canonical
 `scripts/run_tests.sh` runner now works when called without arguments, and the
@@ -124,7 +142,12 @@ Details: [docs/tota-benchmark-win-plan.md](docs/tota-benchmark-win-plan.md).
 | Cold start | ~52 ms | ~50 ms | ~280 ms | Tota Agent |
 | RSS memory | ~30 MB | ~30 MB | ~97 MB | Python variants |
 
-Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf), updated May 17, 2026 with the Tota Agent launch package and current Apple Silicon `.venv` validation.
+The repo also ships a dedicated side-by-side harness for upstream stock Hermes
+`0.14.0`: [`scripts/benchmark_tota_vs_hermes_0140.py`](scripts/benchmark_tota_vs_hermes_0140.py).
+The latest measured status lives in [docs/tota-benchmark-hermes-0.14.0.md](docs/tota-benchmark-hermes-0.14.0.md)
+and was folded into the refreshed PDF.
+
+Benchmark source: [tota_agent_benchmark_report.pdf](tota_agent_benchmark_report.pdf), updated May 18, 2026 with the Tota Agent launch package, Hermes 0.14.0 side-by-side data, and current Apple Silicon `.venv` validation.
 
 ## Benchmark Battle Cards
 

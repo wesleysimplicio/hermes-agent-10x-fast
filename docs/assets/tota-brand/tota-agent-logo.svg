@@ -1,46 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 520" role="img" aria-labelledby="title desc">
   <title id="title">Tota Agent logo</title>
-  <desc id="desc">Tota Agent wordmark with a Brazil to global streaming mark and by Hermes Agent signature.</desc>
+  <desc id="desc">Tota Agent army green and dark mustard wordmark, credited by Hermes Agent.</desc>
   <defs>
-    <linearGradient id="markGradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#19d27f"/>
-      <stop offset="0.42" stop-color="#ffe15a"/>
-      <stop offset="0.74" stop-color="#32b7ff"/>
-      <stop offset="1" stop-color="#ff5d6c"/>
+    <linearGradient id="slash" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#3F4B2F"/>
+      <stop offset="0.56" stop-color="#C49A28"/>
+      <stop offset="1" stop-color="#3F4B2F"/>
     </linearGradient>
-    <linearGradient id="wordGradient" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#f8fbff"/>
-      <stop offset="0.54" stop-color="#dffbf0"/>
-      <stop offset="1" stop-color="#9ed8ff"/>
-    </linearGradient>
-    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.08 0 0 0 0 0.9 0 0 0 0 0.62 0 0 0 0.75 0"/>
-      <feBlend in="SourceGraphic"/>
-    </filter>
   </defs>
-
-  <rect width="1680" height="520" rx="0" fill="#050914"/>
-  <path d="M0 415 C210 335 314 520 520 438 C710 362 781 180 1010 210 C1234 239 1324 392 1680 292 L1680 520 L0 520 Z" fill="#0d162b"/>
-  <path d="M0 455 C247 355 335 492 548 415 C739 346 813 218 1010 244 C1262 278 1378 418 1680 334" fill="none" stroke="#142845" stroke-width="3"/>
-
-  <g transform="translate(95 78)" filter="url(#glow)">
-    <circle cx="180" cy="180" r="152" fill="#08111f" stroke="url(#markGradient)" stroke-width="12"/>
-    <path d="M96 218 C136 132 213 88 280 98 C250 126 244 158 267 195 C225 185 189 197 160 232 C142 253 121 262 96 218 Z" fill="url(#markGradient)" opacity="0.95"/>
-    <path d="M82 264 C137 254 190 255 244 276 C266 285 291 291 321 288" fill="none" stroke="#f8fbff" stroke-width="13" stroke-linecap="round" opacity="0.88"/>
-    <path d="M120 102 L120 256 M90 102 H250" fill="none" stroke="#f8fbff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M166 118 L276 228" fill="none" stroke="#32b7ff" stroke-width="10" stroke-linecap="round"/>
-    <path d="M282 102 L312 118 L282 134" fill="none" stroke="#ffe15a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="312" cy="118" r="9" fill="#ffe15a"/>
-    <circle cx="238" cy="72" r="7" fill="#32b7ff"/>
-    <circle cx="82" cy="284" r="7" fill="#19d27f"/>
-    <path d="M56 322 H305" stroke="#213654" stroke-width="3" stroke-linecap="round"/>
-  </g>
-
-  <g transform="translate(470 116)">
-    <text x="0" y="112" fill="url(#wordGradient)" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="112" font-weight="900" letter-spacing="1">TOTA AGENT</text>
-    <text x="4" y="178" fill="#ffe15a" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" letter-spacing="5">BY HERMES AGENT</text>
-    <path d="M4 220 H765" stroke="url(#markGradient)" stroke-width="8" stroke-linecap="round"/>
-    <text x="4" y="282" fill="#b9c8dc" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="600">Brazilian-fast AI agent fork for streaming-scale automation.</text>
+  <rect width="1680" height="520" fill="#1A2115"/>
+  <path d="M0 520 L618 0 H900 L276 520 Z" fill="#C49A28"/>
+  <path d="M1180 0 H1680 V520 H1430 Z" fill="#11160E" opacity=".52"/>
+  <circle cx="252" cy="260" r="196" fill="#C49A28" stroke="#F7F3DF" stroke-width="18"/>
+  <circle cx="252" cy="260" r="216" fill="none" stroke="#3F4B2F" stroke-width="18"/>
+  <path d="M124 352 C152 230 210 146 292 118 C380 160 410 254 364 374 C300 346 208 344 124 352 Z" fill="#3F4B2F"/>
+  <path d="M152 190 C204 128 306 104 390 158 C340 158 316 176 304 212 C252 190 204 186 152 190 Z" fill="#1A2115"/>
+  <path d="M188 318 C220 366 286 384 338 346" fill="none" stroke="#F7F3DF" stroke-width="22" stroke-linecap="round"/>
+  <text x="278" y="172" fill="#C49A28" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="78" font-weight="900" font-style="italic">A</text>
+  <g transform="translate(580 126)">
+    <text x="0" y="110" fill="#F7F3DF" stroke="#11160E" stroke-width="4" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="112" font-weight="900" letter-spacing="1">TOTA AGENT</text>
+    <text x="4" y="176" fill="#C49A28" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="800" letter-spacing="4">BY HERMES AGENT</text>
+    <path d="M4 218 H830" stroke="url(#slash)" stroke-width="8" stroke-linecap="round"/>
+    <text x="4" y="278" fill="#F7F3DF" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">Whoever is Tota, will never be Claw.</text>
   </g>
 </svg>

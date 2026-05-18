@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hermes-agent"
 version = "0.14.2"
-description = "Tota Agent — a modified, faster Hermes. Self-improving AI agent that creates skills from experience, improves them during use, and runs anywhere."
+description = "The self-improving AI agent — creates skills from experience, improves them during use, and runs anywhere"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Nous Research" }]
@@ -80,6 +80,7 @@ modal = ["modal==1.3.4"]
 daytona = ["daytona==0.155.0"]
 vercel = ["vercel==0.5.7"]
 hindsight = ["hindsight-client==0.6.1"]
+reports = ["reportlab>=4.5.1,<5"]
 dev = ["debugpy==1.8.20", "pytest==9.0.2", "pytest-asyncio==1.3.0", "pytest-xdist==3.8.0", "pytest-split==0.11.0", "mcp==1.26.0", "ty==0.0.21", "ruff==0.15.10", "maturin>=1.0,<2.0"]
 fast = [
   # Performance extras — 2-10x faster JSON encode/decode, faster event loop.
@@ -220,11 +221,6 @@ all = [
 hermes = "hermes_cli.main:main"
 hermes-agent = "run_agent:main"
 hermes-acp = "acp_adapter.entry:main"
-# Tota Agent brand aliases — same entrypoints, Tota-first naming. Both
-# `tota` and `hermes` work; back-compat for existing installs is preserved.
-tota = "hermes_cli.main:main"
-tota-agent = "run_agent:main"
-tota-acp = "acp_adapter.entry:main"
 
 [tool.setuptools]
 py-modules = ["run_agent", "model_tools", "toolsets", "batch_runner", "trajectory_compressor", "toolset_distributions", "cli", "hermes_bootstrap", "hermes_constants", "hermes_state", "hermes_time", "hermes_logging", "utils"]
