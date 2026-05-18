@@ -79,6 +79,25 @@ try:
 except Exception:
     _is_safe_url = lambda url: False  # noqa: E731 — fail-closed: block all if safety module unavailable
     _is_always_blocked_url = lambda url: True  # noqa: E731 — fail-closed on the floor too
+# Browser-provider ABC + registry — PR #25214 moved the per-vendor providers
+# (Browserbase / Browser Use / Firecrawl) out of ``tools/browser_providers/``
+# and into ``plugins/browser/<vendor>/``. The dispatcher consults the
+# registry; the legacy class names are re-exported below as backward-compat
+# shims for callers that import them from this module.
+from agent.browser_provider import BrowserProvider as CloudBrowserProvider  # noqa: F401  (legacy alias)
+from agent.browser_registry import (  # noqa: F401  (test-patchable surface)
+    get_provider as _registry_get_browser_provider,
+)
+from plugins.browser.browserbase.provider import (  # noqa: F401  (legacy import surface)
+    BrowserbaseBrowserProvider as BrowserbaseProvider,
+)
+from plugins.browser.browser_use.provider import (  # noqa: F401
+    BrowserUseBrowserProvider as BrowserUseProvider,
+)
+from plugins.browser.firecrawl.provider import (  # noqa: F401
+    FirecrawlBrowserProvider as FirecrawlProvider,
+)
+from tools.tool_backend_helpers import normalize_browser_cloud_provider
 # Camofox local anti-detection browser backend (optional).
 # When CAMOFOX_URL is set, all browser operations route through the
 # camofox REST API instead of the agent-browser CLI.
@@ -413,54 +432,28 @@ def _stop_cdp_supervisor(task_id: str) -> None:
 # ============================================================================
 # Cloud Provider Registry
 # ============================================================================
-
-def _normalize_browser_cloud_provider(value: object | None) -> str:
-    provider = str(value or "local").strip().lower()
-    return provider or "local"
-
-
-def _browser_use_direct_config_possible(browser_cfg: Dict[str, Any]) -> bool:
-    if not os.getenv("BROWSER_USE_API_KEY"):
-        return False
-    return not _is_truthy_value(browser_cfg.get("use_gateway"))
-
-
-def _browserbase_direct_config_possible() -> bool:
-    return bool(os.getenv("BROWSERBASE_API_KEY") and os.getenv("BROWSERBASE_PROJECT_ID"))
-
-
-def _managed_browser_gateway_possible() -> bool:
-    if os.getenv("TOOL_GATEWAY_USER_TOKEN"):
-        return True
-    try:
-        return (get_hermes_home() / "auth.json").is_file()
-    except Exception:
-        return False
-
-
-def BrowserbaseProvider():
-    from tools.browser_providers.browserbase import BrowserbaseProvider as _Provider
-
-    return _Provider()
-
-
-def BrowserUseProvider():
-    from tools.browser_providers.browser_use import BrowserUseProvider as _Provider
-
-    return _Provider()
-
-
-def FirecrawlProvider():
-    from tools.browser_providers.firecrawl import FirecrawlProvider as _Provider
-
-    return _Provider()
-
-
-_PROVIDER_REGISTRY = {
-    "browserbase": lambda: BrowserbaseProvider(),
-    "browser-use": lambda: BrowserUseProvider(),
-    "firecrawl": lambda: FirecrawlProvider(),
+#
+# Per-vendor browser providers (Browserbase / Browser Use / Firecrawl) live as
+# plugins under ``plugins/browser/<vendor>/`` and self-register through
+# :mod:`agent.browser_registry` at plugin-discovery time. The legacy
+# class-name registry below is preserved as a backward-compat shim so test
+# fixtures that ``monkeypatch.setattr(browser_tool, "_PROVIDER_REGISTRY", ...)``
+# keep working — but ``_get_cloud_provider()`` now consults
+# :mod:`agent.browser_registry` for the actual lookup.
+#
+# When the test patches ``_PROVIDER_REGISTRY``, we honour it (so the cache
+# unit tests still drive the function); otherwise the registry-backed path
+# wins. This keeps the test surface stable while letting third-party
+# plugins drop in under ``~/.hermes/plugins/browser/<vendor>/``.
+_PROVIDER_REGISTRY: Dict[str, type] = {
+    "browserbase": BrowserbaseProvider,
+    "browser-use": BrowserUseProvider,
+    "firecrawl": FirecrawlProvider,
 }
+# Frozen copy of the import-time _PROVIDER_REGISTRY, used by
+# ``_is_legacy_provider_registry_overridden`` to detect test-time
+# monkeypatching. NEVER mutate this dict.
+_DEFAULT_PROVIDER_REGISTRY: Dict[str, type] = dict(_PROVIDER_REGISTRY)
 
 
 def _new_cloud_provider(provider_key: str) -> Optional[Any]:
@@ -481,38 +474,102 @@ _agent_browser_resolved = False
 # agent-browser v0.25.3+ supports ``--engine lightpanda`` natively.
 _cached_browser_engine: Optional[str] = None
 _browser_engine_resolved = False
+def _is_legacy_provider_registry_overridden() -> bool:
+    """Return True when a test has patched ``_PROVIDER_REGISTRY`` to a custom value.
+
+    Detected by spotting any registered class that *isn't* the canonical
+    plugin-backed class for that name. Tests that
+    ``monkeypatch.setattr(browser_tool, "_PROVIDER_REGISTRY", ...)`` install
+    custom factories (`exploding_factory`, `lambda: fake_provider`, etc.);
+    those entries fail the canonical-class identity check below.
+
+    Note: a future maintainer adding a 4th built-in provider only needs to
+    extend ``_DEFAULT_PROVIDER_REGISTRY`` below — they do NOT need to update
+    a hardcoded set of keys here. The detection just compares each registered
+    value against the corresponding canonical class.
+    """
+    try:
+        for key, default_cls in _DEFAULT_PROVIDER_REGISTRY.items():
+            if _PROVIDER_REGISTRY.get(key) is not default_cls:
+                return True
+        # Extra keys not in the default registry → also an override.
+        return len(_PROVIDER_REGISTRY) != len(_DEFAULT_PROVIDER_REGISTRY)
+    except Exception:
+        return False
 
 
-def _get_cloud_provider() -> Optional[Any]:
+def _ensure_browser_plugins_loaded() -> None:
+    """Idempotently trigger plugin discovery so the browser registry is populated.
+
+    Normally `model_tools` is imported early in any session and that
+    triggers `discover_plugins()` as a side effect. But `_get_cloud_provider`
+    can be called from contexts that haven't gone through `model_tools` —
+    standalone scripts, certain unit-test paths, the parity-sweep harness.
+    Make discovery idempotent and side-effect-only here so users always
+    see registered plugins regardless of import order. Cheap: subsequent
+    calls early-return inside `_ensure_plugins_discovered`.
+    """
+    try:
+        from hermes_cli.plugins import _ensure_plugins_discovered
+
+        _ensure_plugins_discovered()
+    except Exception as exc:
+        logger.debug("Browser plugin discovery failed (non-fatal): %s", exc)
+
+
+def _get_cloud_provider() -> Optional[CloudBrowserProvider]:
     """Return the configured cloud browser provider, or None for local mode.
 
     Reads ``config["browser"]["cloud_provider"]`` once and caches the result
     for the process lifetime. An explicit ``local`` provider disables cloud
-    fallback. If unset, fall back to Browser Use or Browserbase when their
-    credentials are available.
+    fallback. If unset, fall back to Browser Use (managed Nous gateway or
+    direct API key) and then Browserbase (direct credentials only) — the
+    historic auto-detect order, now expressed as the
+    :data:`agent.browser_registry._LEGACY_PREFERENCE` walk.
+
+    Selection routes through :mod:`agent.browser_registry` so third-party
+    browser plugins (``~/.hermes/plugins/browser/<vendor>/``) participate
+    in explicit-config resolution. Test fixtures that override
+    ``_PROVIDER_REGISTRY`` or ``BrowserUseProvider`` / ``BrowserbaseProvider``
+    on this module still drive the function — see
+    ``_is_legacy_provider_registry_overridden``.
     """
     global _cached_cloud_provider, _cloud_provider_resolved
     if _cloud_provider_resolved:
         return _cached_cloud_provider
 
-    browser_cfg: Dict[str, Any] = {}
-    provider_key = None
-    resolved: Optional[Any] = None
+    resolved: Optional[CloudBrowserProvider] = None
     try:
         from hermes_cli.config import read_raw_config
+
         cfg = read_raw_config()
-        maybe_browser_cfg = cfg.get("browser", {})
-        browser_cfg = maybe_browser_cfg if isinstance(maybe_browser_cfg, dict) else {}
+        browser_cfg = cfg.get("browser", {})
         provider_key = None
-        if "cloud_provider" in browser_cfg:
-            provider_key = _normalize_browser_cloud_provider(browser_cfg.get("cloud_provider"))
+        if isinstance(browser_cfg, dict) and "cloud_provider" in browser_cfg:
+            provider_key = normalize_browser_cloud_provider(
+                browser_cfg.get("cloud_provider")
+            )
             if provider_key == "local":
                 _cached_cloud_provider = None
                 _cloud_provider_resolved = True
                 return None
         if provider_key:
             try:
-                resolved = _new_cloud_provider(provider_key)
+                if _is_legacy_provider_registry_overridden():
+                    factory = _PROVIDER_REGISTRY.get(provider_key)
+                    if factory is not None:
+                        resolved = factory()
+                else:
+                    _ensure_browser_plugins_loaded()
+                    resolved = _registry_get_browser_provider(provider_key)
+                    if resolved is None:
+                        logger.warning(
+                            "browser.cloud_provider=%r is not a registered "
+                            "browser plugin; falling back to auto-detect "
+                            "(install the corresponding plugin or fix the "
+                            "config key spelling).",
+                            provider_key,
+                        )
             except Exception:
                 logger.warning(
                     "Failed to instantiate explicit cloud_provider %r; will retry on next call",
@@ -521,13 +578,9 @@ def _get_cloud_provider() -> Optional[Any]:
                 )
                 return None
     except Exception as e:
-        # Config file may be temporarily unreadable; still try auto-detect so
-        # env-based / managed-gateway credentials can resolve. Don't pin cache.
         logger.debug("Could not read cloud_provider from config: %s", e)
 
-    if resolved is None and not provider_key:
-        # Prefer Browser Use (managed Nous gateway or direct API key),
-        # fall back to Browserbase (direct credentials only).
+    if resolved is None:
         try:
             fallback_provider = _new_cloud_provider("browser-use")
         except Exception as exc:
@@ -546,7 +599,6 @@ def _get_cloud_provider() -> Optional[Any]:
                 resolved = fallback_provider
 
     if resolved is None:
-        # Transient None — credentials may self-heal. Don't poison the cache.
         return None
 
     _cached_cloud_provider = resolved

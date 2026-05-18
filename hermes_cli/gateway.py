@@ -5,6 +5,7 @@ Handles: hermes gateway [run|start|stop|restart|status|install|uninstall|setup]
 """
 
 import asyncio
+import logging
 import os
 import shutil
 import signal
@@ -38,6 +39,7 @@ from hermes_cli.setup import (
 )
 from hermes_cli.colors import Colors, color
 
+logger = logging.getLogger(__name__)
 
 # =============================================================================
 # Process Management (for manual gateway runs)
@@ -2140,40 +2142,30 @@ def _build_service_path_dirs(project_root: Path | None = None) -> list[str]:
     if project_root is None:
         project_root = PROJECT_ROOT
 
+    def _is_dir(path: Path) -> bool:
+        try:
+            return path.is_dir()
+        except OSError:
+            return False
+
     candidates = []
 
     venv_bin = project_root / "venv" / "bin"
-    try:
-        venv_exists = venv_bin.is_dir()
-    except OSError:
-        venv_exists = False
-    if venv_exists:
+    if _is_dir(venv_bin):
         candidates.append(str(venv_bin))
     elif sys.prefix != sys.base_prefix:
         candidates.append(str(Path(sys.prefix) / "bin"))
 
     node_bin = project_root / "node_modules" / ".bin"
-    try:
-        node_exists = node_bin.is_dir()
-    except OSError:
-        node_exists = False
-    if node_exists:
+    if _is_dir(node_bin):
         candidates.append(str(node_bin))
 
     hermes_home = get_hermes_home()
     hermes_node = hermes_home / "node" / "bin"
-    try:
-        hermes_node_exists = hermes_node.is_dir()
-    except OSError:
-        hermes_node_exists = False
-    if hermes_node_exists:
+    if _is_dir(hermes_node):
         candidates.append(str(hermes_node))
     hermes_nm = hermes_home / "node_modules" / ".bin"
-    try:
-        hermes_nm_exists = hermes_nm.is_dir()
-    except OSError:
-        hermes_nm_exists = False
-    if hermes_nm_exists:
+    if _is_dir(hermes_nm):
         candidates.append(str(hermes_nm))
 
     return candidates

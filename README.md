@@ -68,6 +68,12 @@ uv pip install -e ".[all,dev]"
 ./hermes
 ```
 
+- 💬 [Discord](https://discord.gg/NousResearch)
+- 📚 [Skills Hub](https://agentskills.io)
+- 🐛 [Issues](https://github.com/NousResearch/hermes-agent/issues)
+- 🔌 [computer-use-linux](https://github.com/avifenesh/computer-use-linux) — Linux desktop-control MCP server for Hermes and other MCP hosts, with AT-SPI accessibility trees, Wayland/X11 input, screenshots, and compositor window targeting.
+- 🔌 [HermesClaw](https://github.com/AaronWong1999/hermesclaw) — Community WeChat bridge: Run Hermes Agent and OpenClaw on the same WeChat account.
+
 ### Performance Extras
 
 The benchmarked Tota Agent direction is built around fast Python plus native-extension-ready hot paths:
@@ -88,6 +94,10 @@ Tota Agent uses `orjson`, `msgspec`, `uvloop`, and the Rust extension with
 Python fallbacks for locked-down or source-only environments.
 
 ### Post-Benchmark Performance Patch
+
+Version `0.14.0` rebases Tota Agent on Hermes `0.14.0` while preserving the
+benchmark-driven hot-path work, the Tota branding/storyboard layer, and the
+fork-native `~/.tota` home profile behavior.
 
 Version `0.13.3` refreshes the Tota Agent identity around the approved logo,
 the "Whoever is Tota, will never be Claw" campaign line, and a GPT-image-2
