@@ -3485,6 +3485,11 @@ async def events_ws(ws: WebSocket) -> None:
     async with _event_lock:
         _event_channels.setdefault(channel, set()).add(ws)
 
+    if ws.query_params.get("ready") == "1":
+        await ws.send_text(
+            '{"method":"event","params":{"type":"events.ready","payload":{}}}'
+        )
+
     try:
         while True:
             # Subscribers don't speak — the receive() just blocks until
