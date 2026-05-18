@@ -1,6 +1,6 @@
 # ADR-0003: Plan for cherry-picking the Hermes 0.14.0 security trio
 
-**Status:** Proposed (Sprint 4 / issue #55).
+**Status:** Accepted and landed in `v0.14.1` (Sprint 4 / issue #55).
 **Date:** 2026-05-18.
 **Owner:** @wesleysimplicio.
 
