@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import os
-import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -192,3 +190,48 @@ def test_propagates_subprocess_error(monkeypatch, fake_project):
     reason = status["reason"]
     assert isinstance(reason, str)
     assert "spawn-error" in reason
+
+
+def test_nonzero_exit_does_not_mark_project_done(monkeypatch, fake_project):
+    """Closes Copilot review: non-zero exit must allow retry within the same process."""
+    monkeypatch.delenv("TOTA_AUTO_MAP", raising=False)
+    monkeypatch.delenv("HERMES_AUTO_MAP", raising=False)
+    monkeypatch.setenv("TOTA_HOME", str(fake_project.parent / "tota"))
+
+    def _fail(cmd, **kwargs):
+        return SimpleNamespace(returncode=2, stdout="", stderr="boom")
+
+    monkeypatch.setattr(auto_mapper.subprocess, "run", _fail)
+
+    first = auto_mapper.maybe_map_project(fake_project)
+    assert first["ran"] is True
+    assert first["ok"] is False
+    assert first["returncode"] == 2
+
+    # A successful retry within the same process must spawn the mapper again.
+    second = auto_mapper.maybe_map_project(fake_project)
+    assert second["ran"] is True  # not deduped because the first failed
+
+
+def test_ok_false_payload_does_not_mark_project_done(monkeypatch, fake_project):
+    """Closes Copilot review: ok=false payload should not silently dedup."""
+    monkeypatch.delenv("TOTA_AUTO_MAP", raising=False)
+    monkeypatch.delenv("HERMES_AUTO_MAP", raising=False)
+    monkeypatch.setenv("TOTA_HOME", str(fake_project.parent / "tota"))
+
+    def _fake(cmd, **kwargs):
+        return SimpleNamespace(
+            returncode=0,
+            stdout='{"ok": false, "error": "npx missing"}',
+            stderr="",
+        )
+
+    monkeypatch.setattr(auto_mapper.subprocess, "run", _fake)
+
+    first = auto_mapper.maybe_map_project(fake_project)
+    assert first["ran"] is True
+    assert first["ok"] is False
+    assert "npx missing" in first["reason"]
+
+    second = auto_mapper.maybe_map_project(fake_project)
+    assert second["ran"] is True  # retry allowed

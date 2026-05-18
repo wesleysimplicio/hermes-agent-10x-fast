@@ -71,7 +71,12 @@ def test_bootstrap_force_reseed_overwrites_existing(fresh_tota_home):
     tota_home_bootstrap.bootstrap_tota_home(force_reseed=True)
 
     assert target.read_text() != "operator override\n"
-    assert "0.14.0" in target.read_text()
+    # The repo's .tota/version is the source of truth — track whatever
+    # the current Tota version pin says, not a hardcoded value.
+    repo_version = (
+        (tota_home_bootstrap._repo_root() / ".tota" / "version").read_text().strip()
+    )
+    assert repo_version in target.read_text()
 
 
 def test_bootstrap_only_runs_once_per_process(fresh_tota_home):

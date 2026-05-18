@@ -170,10 +170,15 @@ def snapshot_shutdown_context(received_signal: Any = None) -> Dict[str, Any]:
     # signal-handler path stays import-light.
     try:
         # Resolution order: TOTA_HOME → HERMES_HOME (legacy) → no marker.
+        # Env values are stripped so a blank/whitespace setting doesn't probe
+        # an unintended relative directory (closes Copilot review on PR #61).
         # String literals kept so the signal-handler path stays import-light.
-        hermes_home_str = os.environ.get("TOTA_HOME") or os.environ.get("HERMES_HOME")
+        hermes_home_str = (
+            (os.environ.get("TOTA_HOME") or "").strip()
+            or (os.environ.get("HERMES_HOME") or "").strip()
+        )
         if hermes_home_str:
-            takeover_path = Path(hermes_home_str) / ".gateway-takeover.json"
+            takeover_path = Path(os.path.expanduser(hermes_home_str)) / ".gateway-takeover.json"
             if takeover_path.exists():
                 try:
                     raw = takeover_path.read_text(encoding="utf-8")
