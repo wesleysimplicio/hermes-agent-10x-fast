@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hermes-agent"
-version = "0.14.1"
+version = "0.14.2"
 description = "Tota Agent — a modified, faster Hermes. Self-improving AI agent that creates skills from experience, improves them during use, and runs anywhere."
 readme = "README.md"
 requires-python = ">=3.11"

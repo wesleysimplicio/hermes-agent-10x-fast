@@ -38,7 +38,7 @@ codebase can find the plan without leaving their editor.
 
 - ✅ #39 — PyPI publishing plan → `docs/adr/0001-pypi-publishing.md` (chose Option B: metapackage).
 - ⏳ #40 — Adopt upstream lazy-deps framework (Hermes #24220).
-- ⏳ #41 — Adopt supply-chain advisory checker.
+- ✅ #41 — Adopt supply-chain advisory checker for lazy installs (`hermes_cli/security_advisories.py` + `tools/lazy_deps.py` guard).
 - ⏳ #42 — Adopt tiered install fallback (Hermes #24515).
 - ✅ #43 — Brand consistency pass (default + 4 neutral skins, CLI welcome banner, SOUL.md template).
 - ✅ #44 — `SOUL.md` override docs page (`docs/tota-identity-customization.md`).
