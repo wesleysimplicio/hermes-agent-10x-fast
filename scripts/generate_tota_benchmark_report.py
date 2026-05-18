@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -24,6 +25,7 @@ from reportlab.platypus import (
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = ROOT / "tota_agent_benchmark_report.pdf"
+HERMES_0140_REPORT = ROOT / "docs" / "tota-benchmark-hermes-0.14.0.json"
 LOGO = ROOT / "docs/assets/tota-brand/tota-agent-logo.png"
 OG = ROOT / "docs/assets/tota-brand/tota-agent-og.png"
 CHART_DIR = ROOT / "docs/assets/tota-benchmark/generated"
@@ -42,6 +44,43 @@ INK = colors.HexColor("#1F2937")
 MUTED = colors.HexColor("#64748B")
 PANEL = colors.HexColor("#F8FAFC")
 BORDER = colors.HexColor("#CBD5E1")
+
+HERMES_0140_LABELS = {
+    "cold_start_ms": ("Cold start", "ms"),
+    "json_dumps_short_us": ("JSON dumps short payload", "us"),
+    "tool_call_parse_us": ("Tool-call parse", "us"),
+    "token_estimate_batch_us": ("Token estimate batch", "us"),
+    "async_1000_task_ms": ("Async 1,000-task scheduler", "ms"),
+    "browser_console_p99_ms": ("browser_console p99", "ms"),
+    "integration_breadth": ("Integration breadth", "platforms"),
+}
+
+
+def load_hermes_0140_report() -> dict | None:
+    if not HERMES_0140_REPORT.exists():
+        return None
+    return json.loads(HERMES_0140_REPORT.read_text(encoding="utf-8"))
+
+
+def format_metric_value(value, unit: str) -> str:
+    if value is None:
+        return "blocked"
+    if unit == "platforms":
+        return str(int(value))
+    if unit == "ms":
+        return f"{float(value):.2f} ms"
+    return f"{float(value):.3f} us"
+
+
+def hermes_0140_summary(report: dict | None) -> tuple[int, int, int, int]:
+    if not report:
+        return (0, 0, 0, 0)
+    metrics = report.get("metrics", {}).values()
+    wins = sum(1 for metric in metrics if metric.get("winner") == "Tota Agent")
+    losses = sum(1 for metric in metrics if metric.get("winner") == "Hermes 0.14.0")
+    ties = sum(1 for metric in metrics if metric.get("winner") == "Tie")
+    blocked = sum(1 for metric in metrics if metric.get("winner") == "Blocked")
+    return wins, losses, ties, blocked
 
 
 def p(text: str, style: ParagraphStyle) -> Paragraph:
@@ -220,6 +259,10 @@ def branded_page(canvas, doc):
 
 def story() -> list:
     s: list = []
+    hermes_0140_report = load_hermes_0140_report()
+    hermes_0140_wins, hermes_0140_losses, hermes_0140_ties, hermes_0140_blocked = hermes_0140_summary(
+        hermes_0140_report
+    )
 
     s.append(Spacer(1, 0.7 * cm))
     s.append(Image(str(LOGO), width=CONTENT_WIDTH, height=CONTENT_WIDTH / 3))
@@ -234,7 +277,7 @@ def story() -> list:
     s.append(
         metric_cards(
             [
-                ("Total score", "44 / 50", "Tota Agent leads the comparison", "#19D27F"),
+                ("Hermes 0.14.0", f"{hermes_0140_wins} / 7", "Measured rows won by Tota Agent", "#19D27F"),
                 ("JSON encode", "7.1x", "Current .venv vs stdlib", "#FFE15A"),
                 ("Session batch", "5.3x", "180-message append speedup", "#32B7FF"),
                 ("Rust path", "ON", "HAVE_RUST=True", "#FF5D6C"),
@@ -248,6 +291,17 @@ def story() -> list:
             STYLES["Body"],
         )
     )
+    if hermes_0140_report:
+        s.append(
+            p(
+                "Hermes 0.14.0 refresh: "
+                f"{hermes_0140_wins} wins / {hermes_0140_losses} losses / "
+                f"{hermes_0140_ties} ties / {hermes_0140_blocked} blocked. "
+                f"Generated {hermes_0140_report.get('generated_at')} from "
+                f"{HERMES_0140_REPORT.relative_to(ROOT)}.",
+                STYLES["Body"],
+            )
+        )
     s.append(
         p(
             "Repository: github.com/wesleysimplicio/tota-agent | Upstream: NousResearch/hermes-agent | Site: tota-agent.html",
@@ -383,6 +437,33 @@ def story() -> list:
     s.append(PageBreak())
 
     s.append(p("5. Benchmark Comparison", STYLES["H1"]))
+    if hermes_0140_report:
+        rows = [["Metric", "Hermes 0.14.0", "Tota Agent", "Winner", "Delta"]]
+        for key, (label, unit) in HERMES_0140_LABELS.items():
+            metric = hermes_0140_report["metrics"][key]
+            rows.append(
+                [
+                    label,
+                    format_metric_value(metric.get("stock"), unit),
+                    format_metric_value(metric.get("local"), unit),
+                    metric.get("winner", "-"),
+                    "-" if metric.get("speedup") is None else f"{metric['speedup']:.2f}x",
+                ]
+            )
+        s.append(
+            p(
+                "Current side-by-side refresh against upstream Hermes 0.14.0. "
+                f"Browser status: {hermes_0140_report.get('browser_console', {}).get('status', 'unknown')}.",
+                STYLES["Body"],
+            )
+        )
+        s.append(
+            para_table(
+                rows,
+                [4.5 * cm, 3.2 * cm, 3.2 * cm, 3.3 * cm, CONTENT_WIDTH - 14.2 * cm],
+            )
+        )
+        s.append(Spacer(1, 0.25 * cm))
     s.append(
         para_table(
             [
