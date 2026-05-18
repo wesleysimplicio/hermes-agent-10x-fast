@@ -16,6 +16,7 @@ import argparse
 import datetime as _dt
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -27,13 +28,36 @@ MAPPER_NPM_PACKAGE = "@wesleysimplicio/llm-project-mapper"
 MEMORY_FILENAME = "mapped_projects.json"
 DEFAULT_TTL_DAYS = 30
 
+# Artifacts the mapper writes on a successful run.  Used by ``_ralph_ready``
+# to confirm the mapping actually produced the AGENTS.md ecosystem instead
+# of just dropping AGENTS.md.  Kept in sync with the mapper's bin/cli.js
+# copy list (AGENTS.md, CLAUDE.md, INIT.md, _BOOTSTRAP.md).
+_RALPH_MIN_ARTIFACTS = ("AGENTS.md", "INIT.md", "_BOOTSTRAP.md")
+_MAPPER_VERSION_RE = re.compile(r"v(\d+\.\d+\.\d+(?:[-+][\w.]+)?)")
+
 
 def _tota_home() -> Path:
-    for env_var in ("TOTA_HOME", "HERMES_HOME"):
-        val = os.environ.get(env_var, "").strip()
-        if val:
-            return Path(val).expanduser()
-    return Path.home() / ".tota"
+    """Return ``$TOTA_HOME`` falling back to ``$HERMES_HOME`` then ``~/.tota``.
+
+    Imports ``hermes_constants.get_hermes_home`` when available so the
+    profile-aware resolution stays in one place.  Falls back to a stdlib-
+    only lookup when the script runs outside the Tota process tree (e.g.
+    a fresh checkout, CI, system Python).
+    """
+    try:
+        # Add repo root to sys.path so the import resolves when the skill
+        # script runs out-of-process (e.g. `python skills/.../map_project.py`).
+        repo_root = Path(__file__).resolve().parents[4]
+        if str(repo_root) not in sys.path:
+            sys.path.insert(0, str(repo_root))
+        from hermes_constants import get_hermes_home  # type: ignore[import-not-found]
+        return get_hermes_home()
+    except (ImportError, ModuleNotFoundError, ValueError):
+        for env_var in ("TOTA_HOME", "HERMES_HOME"):
+            val = os.environ.get(env_var, "").strip()
+            if val:
+                return Path(val).expanduser()
+        return Path.home() / ".tota"
 
 
 def _memory_path() -> Path:
@@ -93,13 +117,30 @@ def _agents_md_present(project_root: Path) -> bool:
 
 
 def _ralph_ready(project_root: Path) -> bool:
-    if not _agents_md_present(project_root):
-        return False
-    specs_dir = project_root / ".specs"
-    if not specs_dir.is_dir():
-        return False
-    # at least one spec file (any extension)
-    return any(specs_dir.iterdir())
+    """True when the mapper produced enough of its AGENTS.md ecosystem.
+
+    The mapper's stable output set on a successful run is AGENTS.md +
+    INIT.md + _BOOTSTRAP.md (plus CLAUDE.md, README mirrors, and the
+    `.agents/` / `.claude/` / `.codex/` / `.skills/` directories — those
+    vary across mapper versions so we don't assert on them).  Presence
+    of all three core docs is the minimum surface a `/goal` (Ralph) loop
+    needs to make non-trivial progress without re-onboarding mid-flight.
+    """
+    return all((project_root / name).exists() for name in _RALPH_MIN_ARTIFACTS)
+
+
+def _extract_mapper_version(stdout: str) -> str:
+    """Parse the mapper's banner for its self-reported version.
+
+    The mapper prints a banner like ``LLM Project Mapper - Bootstrap (npx)\n  v0.2.0``
+    on every run; pulling the version from there avoids a second
+    ``npx --yes`` invocation (which would re-install or even re-execute
+    the mapper on a cache miss).
+    """
+    if not stdout:
+        return "unknown"
+    match = _MAPPER_VERSION_RE.search(stdout)
+    return match.group(1) if match else "unknown"
 
 
 def _run_mapper(project_root: Path) -> tuple[bool, str]:
@@ -122,26 +163,7 @@ def _run_mapper(project_root: Path) -> tuple[bool, str]:
     if result.returncode != 0:
         msg = (result.stderr or result.stdout or "").strip()[:500]
         return False, f"mapper exited with code {result.returncode}: {msg}"
-    return True, (result.stdout or "").strip()[:500]
-
-
-def _mapper_version() -> str:
-    npx = shutil.which("npx")
-    if not npx:
-        return "unknown"
-    try:
-        result = subprocess.run(
-            [npx, "--yes", MAPPER_NPM_PACKAGE, "--version"],
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=30,
-        )
-    except (OSError, subprocess.SubprocessError):
-        return "unknown"
-    if result.returncode != 0:
-        return "unknown"
-    return result.stdout.strip() or "unknown"
+    return True, (result.stdout or "").strip()
 
 
 def map_project(project_root: Path, force: bool, ttl_days: int) -> dict[str, Any]:
@@ -164,14 +186,14 @@ def map_project(project_root: Path, force: bool, ttl_days: int) -> dict[str, Any
         "project_root": str(project_root),
         "git_remote": _git_remote(project_root),
         "mapped_at": _dt.datetime.now(_dt.timezone.utc).isoformat().replace("+00:00", "Z"),
-        "mapper_version": _mapper_version(),
+        "mapper_version": _extract_mapper_version(output),
         "agents_md_present": _agents_md_present(project_root),
         "ralph_ready": _ralph_ready(project_root),
     }
     memory[key] = entry
     _save_memory(memory)
 
-    return {"ok": True, "skipped": False, "entry": entry, "mapper_output": output}
+    return {"ok": True, "skipped": False, "entry": entry, "mapper_output": output[:500]}
 
 
 def main(argv: list[str] | None = None) -> int:

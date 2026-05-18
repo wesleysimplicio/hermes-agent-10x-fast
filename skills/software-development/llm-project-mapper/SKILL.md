@@ -88,9 +88,12 @@ survives across sessions and profiles. Each entry looks like:
 }
 ```
 
-`ralph_ready` is `true` when the mapping produced an `AGENTS.md` and at least
-one `.specs/` file — the minimum surface a `/goal` (Ralph) loop needs to make
-non-trivial progress without re-onboarding mid-flight.
+`ralph_ready` is `true` when the mapping produced `AGENTS.md`, `INIT.md`,
+and `_BOOTSTRAP.md` — the minimum surface a `/goal` (Ralph) loop needs to
+make non-trivial progress without re-onboarding mid-flight. The mapper
+also writes `CLAUDE.md`, `README` mirrors, and the `.agents/`, `.claude/`,
+`.codex/`, `.skills/` directories; those vary across mapper versions, so
+the readiness check stays on the three docs above.
 
 ## Why This Lives in Tota Core
 

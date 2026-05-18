@@ -91,8 +91,9 @@ The script:
 3. Spawns `npx --yes @wesleysimplicio/llm-project-mapper` inside the
    project root when needed.
 4. Records the new fingerprint with timestamp, git remote, mapper
-   version, and `ralph_ready` (true when AGENTS.md + at least one
-   `.specs/` file exist).
+   version (parsed from the mapper's own banner — no second `npx`
+   invocation), and `ralph_ready` (true when `AGENTS.md`, `INIT.md`,
+   and `_BOOTSTRAP.md` all exist).
 
 ### Default agent directive
 
