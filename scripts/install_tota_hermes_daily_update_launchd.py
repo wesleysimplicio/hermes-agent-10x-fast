@@ -20,6 +20,12 @@ def _launchctl(*args: str) -> None:
     subprocess.run(["launchctl", *args], check=False)
 
 
+def _launchd_uid() -> int:
+    if not hasattr(os, "getuid"):
+        raise SystemExit("This LaunchAgent installer requires macOS or another POSIX runtime.")
+    return os.getuid()  # windows-footgun: ok - guarded above; LaunchAgent is macOS-only.
+
+
 def install(hour: int, minute: int, python_version: str) -> None:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     PLIST_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -47,7 +53,7 @@ def install(hour: int, minute: int, python_version: str) -> None:
     }
     with PLIST_PATH.open("wb") as fh:
         plistlib.dump(payload, fh, sort_keys=False)
-    uid = os.getuid()
+    uid = _launchd_uid()
     _launchctl("bootout", f"gui/{uid}", str(PLIST_PATH))
     _launchctl("bootstrap", f"gui/{uid}", str(PLIST_PATH))
     _launchctl("enable", f"gui/{uid}/{LABEL}")
@@ -57,7 +63,7 @@ def install(hour: int, minute: int, python_version: str) -> None:
 
 
 def uninstall() -> None:
-    uid = os.getuid()
+    uid = _launchd_uid()
     _launchctl("bootout", f"gui/{uid}", str(PLIST_PATH))
     if PLIST_PATH.exists():
         PLIST_PATH.unlink()
