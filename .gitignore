@@ -50,6 +50,7 @@ cli-config.yaml
 skills/.hub/
 ignored/
 .worktrees/
+.claude/worktrees/
 environments/benchmarks/evals/
 
 # Web UI build output

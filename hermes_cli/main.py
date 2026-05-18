@@ -249,6 +249,29 @@ try:
 except Exception:
     pass  # best-effort — don't crash the CLI if logging setup fails
 
+# Seed the runtime $TOTA_HOME with the fork's opinionated defaults shipped
+# under the repo's .tota/ tree (HERMES_BASE, version, memories/MEMORY.md,
+# mapped_projects.json). Idempotent and non-destructive — existing operator
+# files are never overwritten.
+try:
+    from agent.tota_home_bootstrap import bootstrap_tota_home as _bootstrap_tota_home
+
+    _bootstrap_tota_home()
+except Exception:
+    pass  # best-effort — agent works fine without seed files
+
+# Tota-core directive: auto-invoke llm-project-mapper on first turn in any
+# code project. Idempotent across sessions (the mapper itself dedups via
+# $TOTA_HOME/mapped_projects.json) and within a session (auto_mapper dedups
+# per process). Disabled by TOTA_AUTO_MAP=0 or by a sentinel file in
+# $TOTA_HOME/.disable_auto_mapper.
+try:
+    from agent.auto_mapper import maybe_map_project as _maybe_map_project
+
+    _maybe_map_project()
+except Exception:
+    pass  # best-effort — agent works fine without the mapper
+
 # Apply IPv4 preference early, before any HTTP clients are created.
 try:
     from hermes_cli.config import load_config as _load_config_early
