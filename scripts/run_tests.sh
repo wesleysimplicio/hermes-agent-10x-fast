@@ -91,6 +91,7 @@ export TZ=UTC
 export LANG=C.UTF-8
 export LC_ALL=C.UTF-8
 export PYTHONHASHSEED=0
+export HERMES_DISABLE_CLAUDE_KEYCHAIN=1
 
 # ── Live-gateway test guard (developer machines) ────────────────────────────
 # If a system-wide hermes pytest_live_guard plugin is installed at
@@ -117,18 +118,21 @@ WORKERS="${HERMES_TEST_WORKERS:-4}"
 # ── Run pytest ──────────────────────────────────────────────────────────────
 cd "$REPO_ROOT"
 
-# If the first argument starts with `-` treat all args as pytest flags;
-# otherwise treat them as test paths.
-ARGS=("$@")
-
 echo "▶ running pytest with $WORKERS workers, hermetic env, in $REPO_ROOT"
 echo "  (TZ=UTC LANG=C.UTF-8 PYTHONHASHSEED=0; all credential env vars unset)"
 
 # -o "addopts=" clears pyproject.toml's `-n auto` so our -n wins.
-exec "$PYTHON" -m pytest \
-  -o "addopts=" \
-  -n "$WORKERS" \
-  --ignore=tests/integration \
-  --ignore=tests/e2e \
-  -m "not integration" \
-  "${ARGS[@]}"
+PYTEST_CMD=(
+  "$PYTHON" -m pytest
+  -o "addopts="
+  -n "$WORKERS"
+  --ignore=tests/integration
+  --ignore=tests/e2e
+  -m "not integration"
+)
+
+if [ "$#" -gt 0 ]; then
+  PYTEST_CMD+=("$@")
+fi
+
+exec "${PYTEST_CMD[@]}"

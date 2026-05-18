@@ -8,6 +8,7 @@ when launchd will auto-respawn.
 
 import os
 import subprocess
+import sys
 from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
 
@@ -35,6 +36,29 @@ def _no_restart_verify_sleep(monkeypatch):
     """
     import time as _real_time
     monkeypatch.setattr(_real_time, "sleep", lambda *_a, **_k: None)
+
+
+@pytest.fixture(autouse=True)
+def _isolate_cmd_update_side_effects(monkeypatch):
+    """These tests exercise gateway restart decisions, not update side jobs."""
+    monkeypatch.setattr(cli_main, "_refresh_active_lazy_features", lambda: None)
+    monkeypatch.setattr(cli_main, "_update_node_dependencies", lambda: None)
+    monkeypatch.setattr(cli_main, "_build_web_ui", lambda *_a, **_k: None)
+    monkeypatch.setitem(
+        sys.modules,
+        "tools.skills_sync",
+        SimpleNamespace(sync_skills=lambda quiet=True: {
+            "copied": [],
+            "updated": [],
+            "user_modified": [],
+            "cleaned": [],
+        }),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "hermes_cli.profiles",
+        SimpleNamespace(list_profiles=lambda: [], seed_profile_skills=lambda *_a, **_k: {}),
+    )
 
 
 # ---------------------------------------------------------------------------

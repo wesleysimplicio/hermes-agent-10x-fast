@@ -58,6 +58,8 @@ uv pip install -e ".[all,dev]"
 ./hermes
 ```
 
+Windows users can use the native PowerShell installer at `scripts/install.ps1`.
+
 ### From This Checkout
 
 ```bash
@@ -87,6 +89,10 @@ Tota Agent uses `orjson`, `msgspec`, `uvloop`, and the Rust extension with
 Python fallbacks for locked-down or source-only environments.
 
 ### Post-Benchmark Performance Patch
+
+Version `0.13.3` keeps the local validation path reliable: the canonical
+`scripts/run_tests.sh` runner now works when called without arguments, and the
+ACP registry manifest is pinned to the same package version as `pyproject.toml`.
 
 Version `0.13.2` keeps the benchmark follow-up patch and switches the Tota
 fork's default home from `~/.hermes` to `~/.tota` for new installs. `TOTA_HOME`
