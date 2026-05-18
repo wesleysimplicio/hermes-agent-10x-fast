@@ -404,7 +404,9 @@ class TestGetSectionConfigSummary:
         assert result == "max turns: 120"
 
     def test_gateway_returns_none_without_tokens(self):
-        with patch.object(setup_mod, "get_env_value", return_value=""):
+        import hermes_cli.gateway as gateway_mod
+        with patch.object(setup_mod, "get_env_value", return_value=""), \
+             patch.object(gateway_mod, "get_env_value", return_value=""):
             result = setup_mod._get_section_config_summary({}, "gateway")
         assert result is None
 
@@ -609,6 +611,8 @@ class TestSetupWizardSkipsConfiguredSections:
         Simulates the real flow: get_env_value returns "" during the is_existing
         check (before migration), then returns a key after migration imported it.
         """
+        import hermes_cli.gateway as gateway_mod
+
         args = _first_time_args()
 
         # Track whether migration has "run" — after it does, API key is available
@@ -633,6 +637,7 @@ class TestSetupWizardSkipsConfiguredSections:
             ),
             patch.object(setup_mod, "get_hermes_home", return_value=tmp_path),
             patch.object(setup_mod, "get_env_value", side_effect=env_side),
+            patch.object(gateway_mod, "get_env_value", side_effect=env_side),
             patch.object(setup_mod, "is_interactive_stdin", return_value=True),
             patch("hermes_cli.auth.get_active_provider", return_value=None),
             patch("builtins.input", return_value=""),

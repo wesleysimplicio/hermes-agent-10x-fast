@@ -134,6 +134,7 @@ AUTHOR_MAP = {
     "ninso112@proton.me": "Ninso112",
     "wesleysimplicio@live.com": "wesleysimplicio",
     "wesley.simplicio.ext@siemens-energy.com": "wesleysimplicio",
+    "wesleybob4@gmail.com": "wesleysimplicio",
     "nightcityblade@gmail.com": "nightcityblade",
     "robin@soal.org": "rewbs",
     "matthew.dean.cater@gmail.com": "SiliconID",

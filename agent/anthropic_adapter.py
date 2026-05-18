@@ -669,6 +669,13 @@ def _read_claude_code_credentials_from_keychain() -> Optional[Dict[str, Any]]:
 
     Returns dict with {accessToken, refreshToken?, expiresAt?} or None.
     """
+    if os.getenv("HERMES_DISABLE_CLAUDE_KEYCHAIN", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }:
+        return None
+
     if platform.system() != "Darwin":
         return None
 
@@ -691,12 +698,14 @@ def _read_claude_code_credentials_from_keychain() -> Optional[Dict[str, Any]]:
         return None
 
     raw = result.stdout.strip()
+    if not isinstance(raw, str):
+        return None
     if not raw:
         return None
 
     try:
         data = json.loads(raw)
-    except json.JSONDecodeError:
+    except (json.JSONDecodeError, TypeError):
         logger.debug("Keychain: credentials payload is not valid JSON")
         return None
 
@@ -2075,5 +2084,4 @@ def build_anthropic_kwargs(
         kwargs["extra_headers"] = {"anthropic-beta": ",".join(betas)}
 
     return kwargs
-
 
