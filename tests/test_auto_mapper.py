@@ -231,7 +231,8 @@ def test_ok_false_payload_does_not_mark_project_done(monkeypatch, fake_project):
     first = auto_mapper.maybe_map_project(fake_project)
     assert first["ran"] is True
     assert first["ok"] is False
-    assert "npx missing" in first["reason"]
+    reason = first["reason"]
+    assert isinstance(reason, str) and "npx missing" in reason
 
     second = auto_mapper.maybe_map_project(fake_project)
     assert second["ran"] is True  # retry allowed
