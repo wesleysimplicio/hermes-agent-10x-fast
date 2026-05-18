@@ -253,24 +253,77 @@ except Exception:
 # under the repo's .tota/ tree (HERMES_BASE, version, memories/MEMORY.md,
 # mapped_projects.json). Idempotent and non-destructive — existing operator
 # files are never overwritten.
-try:
-    from agent.tota_home_bootstrap import bootstrap_tota_home as _bootstrap_tota_home
+#
+# Gating: only run the bootstrap and the auto-mapper for subcommands that
+# actually start an interactive agent session. Cheap utility subcommands
+# (`hermes --help`, `hermes --version`, `hermes config`, `hermes status`,
+# `hermes doctor`, `hermes logout`, `hermes update`, etc.) should stay
+# side-effect-free — no filesystem writes, no `npx` spawn. Closes Copilot
+# review on PR #61.
+_AGENT_SUBCOMMANDS = frozenset({
+    "chat",  # default interactive chat
+    "gateway",  # platform gateway
+    "cron",  # scheduled agent runs
+    "acp",  # editor integration agent
+    "kanban",  # multi-agent board
+    "send",  # one-shot send
+    "honcho",  # memory mode
+    "tui",  # ink TUI
+    "proxy",  # local OpenAI-compatible proxy
+})
 
-    _bootstrap_tota_home()
-except Exception:
-    pass  # best-effort — agent works fine without seed files
 
-# Tota-core directive: auto-invoke llm-project-mapper on first turn in any
-# code project. Idempotent across sessions (the mapper itself dedups via
-# $TOTA_HOME/mapped_projects.json) and within a session (auto_mapper dedups
-# per process). Disabled by TOTA_AUTO_MAP=0 or by a sentinel file in
-# $TOTA_HOME/.disable_auto_mapper.
-try:
-    from agent.auto_mapper import maybe_map_project as _maybe_map_project
+def _should_run_agent_side_effects() -> bool:
+    """Return True when the CLI invocation is going to start an agent.
 
-    _maybe_map_project()
-except Exception:
-    pass  # best-effort — agent works fine without the mapper
+    Bootstrap + auto-mapper are gated behind this so `hermes --help` and
+    other cheap-utility paths don't trigger filesystem writes or npx spawns.
+    Default: True (run them) unless we can clearly identify a cheap path.
+    Tota-set ``TOTA_SKIP_STARTUP_HOOKS=1`` forces a skip.
+    """
+    if (os.environ.get("TOTA_SKIP_STARTUP_HOOKS") or "").strip() in {"1", "true", "yes", "on"}:
+        return False
+    if len(sys.argv) <= 1:
+        return True  # bare `hermes` → interactive chat
+    first = sys.argv[1].lstrip("-").lower()
+    if first in {"help", "version", "h", "v"}:
+        return False
+    if first in _AGENT_SUBCOMMANDS:
+        return True
+    # Unknown / cheap subcommands (config, status, doctor, logout, update,
+    # tools, skills, profile, model, debug, dump, plugins, version, etc.)
+    # default to "no side effects" — these don't run an agent.
+    _CHEAP_SUBCOMMANDS = frozenset({
+        "config", "status", "doctor", "logout", "update", "uninstall",
+        "tools", "skills", "profile", "model", "debug", "dump",
+        "plugins", "version", "logs", "curator", "webhook",
+    })
+    if first in _CHEAP_SUBCOMMANDS:
+        return False
+    # Default to True for unrecognised inputs — better to run the hooks
+    # than to silently skip them on a new subcommand.
+    return True
+
+
+if _should_run_agent_side_effects():
+    try:
+        from agent.tota_home_bootstrap import bootstrap_tota_home as _bootstrap_tota_home
+
+        _bootstrap_tota_home()
+    except Exception:
+        pass  # best-effort — agent works fine without seed files
+
+    # Tota-core directive: auto-invoke llm-project-mapper on first turn in
+    # any code project. Idempotent across sessions (the mapper itself
+    # dedups via $TOTA_HOME/mapped_projects.json) and within a session
+    # (auto_mapper dedups per process). Disabled by TOTA_AUTO_MAP=0 or by
+    # a sentinel file in $TOTA_HOME/.disable_auto_mapper.
+    try:
+        from agent.auto_mapper import maybe_map_project as _maybe_map_project
+
+        _maybe_map_project()
+    except Exception:
+        pass  # best-effort — agent works fine without the mapper
 
 # Apply IPv4 preference early, before any HTTP clients are created.
 try:

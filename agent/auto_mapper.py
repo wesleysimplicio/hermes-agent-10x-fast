@@ -143,7 +143,6 @@ def maybe_map_project(cwd: str | Path | None = None) -> dict[str, object]:
         logger.warning("Auto-mapper subprocess failed: %s", exc)
         return {"ran": False, "reason": f"spawn-error:{exc}", "result": None}
 
-    _AUTO_MAP_DONE.add(project_root)
     parsed: dict | None = None
     if result.stdout:
         try:
@@ -152,11 +151,34 @@ def maybe_map_project(cwd: str | Path | None = None) -> dict[str, object]:
             parsed = json.loads(result.stdout)
         except (ValueError, TypeError):
             parsed = None
+
+    # Only mark this project as "done for the session" if the mapper actually
+    # succeeded.  A non-zero exit or an ``ok: false`` payload means the next
+    # invocation within the same process should try again instead of silently
+    # skipping.  Closes Copilot review on PR #61.
+    success = result.returncode == 0 and (
+        parsed is None or parsed.get("ok") is True
+    )
+    if success:
+        _AUTO_MAP_DONE.add(project_root)
+        reason = "mapped"
+    else:
+        reason = f"mapper-failed:returncode={result.returncode}"
+        if parsed and parsed.get("error"):
+            reason = f"mapper-failed:{parsed['error']}"
+        logger.warning(
+            "Auto-mapper failed for %s: returncode=%s, parsed=%r",
+            project_root,
+            result.returncode,
+            parsed,
+        )
+
     return {
         "ran": True,
-        "reason": "mapped",
+        "reason": reason,
         "result": parsed,
         "returncode": result.returncode,
+        "ok": success,
     }
 
 
