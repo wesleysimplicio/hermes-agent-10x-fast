@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hermes-agent"
-version = "0.14.4"
-description = "Tota Agent — a modified, faster Hermes that keeps the upstream core current"
+version = "0.14.5"
+description = "Hermes Turbo Agent — a modified, faster Hermes fork with desktop and car profile distributions"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Nous Research" }]
@@ -222,6 +222,9 @@ all = [
 hermes = "hermes_cli.main:main"
 hermes-agent = "run_agent:main"
 hermes-acp = "acp_adapter.entry:main"
+hermes-turbo = "hermes_cli.main:main"
+hermes-turbo-agent = "run_agent:main"
+hermes-turbo-acp = "acp_adapter.entry:main"
 tota = "hermes_cli.main:main"
 tota-agent = "run_agent:main"
 tota-acp = "acp_adapter.entry:main"

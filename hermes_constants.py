@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 DEFAULT_HOME_DIRNAME = ".tota"
+TURBO_HOME_ENV = "HERMES_TURBO_HOME"
 TOTA_HOME_ENV = "TOTA_HOME"
 LEGACY_HOME_ENV = "HERMES_HOME"
 
@@ -48,7 +49,10 @@ def _default_home() -> Path:
 
 
 def _configured_home_env() -> str:
-    """Return the configured home path, honoring Tota then legacy Hermes env."""
+    """Return the configured home path, honoring Turbo, Tota, then Hermes env."""
+    val = os.environ.get(TURBO_HOME_ENV, "").strip()
+    if val:
+        return val
     val = os.environ.get(TOTA_HOME_ENV, "").strip()
     if val:
         return val
@@ -56,9 +60,10 @@ def _configured_home_env() -> str:
 
 
 def get_hermes_home() -> Path:
-    """Return the Tota/Hermes home directory (default: ~/.tota).
+    """Return the Hermes Turbo/Tota/Hermes home directory (default: ~/.tota).
 
-    Reads TOTA_HOME first, then legacy HERMES_HOME, then falls back to ~/.tota.
+    Reads HERMES_TURBO_HOME first, then TOTA_HOME, then legacy HERMES_HOME,
+    then falls back to ~/.tota.
     This is the single source of truth — all other copies should import this.
 
     When home env vars are unset but an ``active_profile`` file indicates
@@ -100,7 +105,7 @@ def get_hermes_home() -> Path:
             # on consoles where a StreamHandler is already attached.
             import sys
             msg = (
-                f"[HERMES_HOME fallback] TOTA_HOME/HERMES_HOME are unset but active "
+                f"[HERMES_HOME fallback] HERMES_TURBO_HOME/TOTA_HOME/HERMES_HOME are unset but active "
                 f"profile is {active!r}. Falling back to ~/{DEFAULT_HOME_DIRNAME}, which "
                 f"is the DEFAULT profile — not {active!r}. Any data this "
                 f"process writes will land in the wrong profile. The "

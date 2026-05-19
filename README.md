@@ -2,28 +2,29 @@
   <img src="docs/assets/tota-brand/tota-agent-vs-openclaw-banner.png" alt="Tota Agent by Hermes Agent versus OpenClaw benchmark banner" width="100%">
 </p>
 
-# Tota Agent
+# Hermes Turbo Agent
 
 <p align="center">
-  <a href="tota-agent.html"><img src="https://img.shields.io/badge/Site-tota--agent.html-19D27F?style=for-the-badge" alt="Tota Agent HTML site"></a>
+  <a href="hermes-turbo-agent.html"><img src="https://img.shields.io/badge/Site-hermes--turbo--agent.html-19D27F?style=for-the-badge" alt="Hermes Turbo Agent HTML site"></a>
   <a href="tota_agent_benchmark_report.pdf"><img src="https://img.shields.io/badge/Benchmark-PDF-FFE15A?style=for-the-badge" alt="Benchmark PDF"></a>
-  <a href="https://github.com/wesleysimplicio/tota-agent"><img src="https://img.shields.io/badge/Fork-wesleysimplicio%2Ftota--agent-32B7FF?style=for-the-badge&logo=github" alt="Tota Agent fork"></a>
+  <a href="https://github.com/wesleysimplicio/tota-agent"><img src="https://img.shields.io/badge/Fork-wesleysimplicio%2Ftota--agent-32B7FF?style=for-the-badge&logo=github" alt="Hermes Turbo Agent fork"></a>
   <a href="https://x.com/wesleysimplic"><img src="https://img.shields.io/badge/X-@wesleysimplic-000000?style=for-the-badge&logo=x" alt="Wesley Simplicio on X"></a>
   <a href="https://github.com/NousResearch/hermes-agent"><img src="https://img.shields.io/badge/Upstream-Hermes%20Agent-FF5D6C?style=for-the-badge" alt="Hermes Agent upstream"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
 <p align="center">
-  <strong>Once you're Tota, you'll never be OpenClaw.</strong>
+  <strong>Hermes Turbo Agent, formerly Tota Agent.</strong>
 </p>
 
-**Tota Agent is a Brazilian-fast fork of [Hermes Agent](https://github.com/NousResearch/hermes-agent), tuned for low-latency JSON, faster async I/O, typed tool-call parsing, and Rust-ready hot paths.** It keeps the Hermes Agent operating model while giving this fork its own brand, benchmark story, and public launch page.
+**Hermes Turbo Agent is the renamed evolution of Tota Agent: a faster fork of [Hermes Agent](https://github.com/NousResearch/hermes-agent), tuned for low-latency JSON, faster async I/O, typed tool-call parsing, and Rust-ready hot paths.** It keeps the Hermes Agent operating model while adding a cleaner fork identity plus installable `desktop` and `car` profile distributions.
 
-The visual identity is inspired by Tota MC's public Brazil-to-US streaming rise: creator energy, Rocinha-to-global momentum, improvised live culture, and cross-language charisma. Public references include the Streamer University coverage by [Times of India](https://timesofindia.indiatimes.com/sports/esports/news/who-is-tota-mc-meet-streamer-universitys-viral-brazilian-star/articleshow/121433457.cms) and the Portuguese profile syndicated by [Rede NXT](https://www.redenxt.com.br/noticia/5281/pop-amp-arte/quem-e-tota-mc-influenciador-da-rocinha-que-vendia-bala-no-sinal-e-hoje-tem-6-milhoes-de-seguidores-com-fas-como-snoop-dogg-e-drake.html). The core geometric logo does not use a portrait or imply official endorsement; the benchmark battle cards also include the supplied circular Tota mark for campaign use.
+Legacy filenames, benchmark PDFs, and older docs may still reference `Tota Agent` or `.tota`; that compatibility layer is intentionally preserved during the rename.
 
 ## Launch Assets
 
-- [Standalone HTML site](tota-agent.html)
+- [Hermes Turbo Agent site](hermes-turbo-agent.html)
+- [Legacy benchmark microsite](tota-agent.html)
 - [Tota vs OpenClaw launch banner PNG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.png)
 - [Tota vs OpenClaw launch banner SVG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.svg)
 - [Benchmark battle cards](docs/assets/tota-benchmark/battles/)
@@ -35,14 +36,28 @@ The visual identity is inspired by Tota MC's public Brazil-to-US streaming rise:
 - [Open graph image](docs/assets/tota-brand/tota-agent-og.png)
 - [GPT-image-2 emblem source](docs/assets/tota-brand/generated/gpt-image-2-tota-agent-emblem.png)
 
-## Why Tota Agent
+## Variants
 
-| Need | Tota Agent answer |
+- `desktop`: installable profile distribution for local workstation use, browser + desktop automation, coding, operations, and review loops.
+- `car`: installable profile distribution for in-car/copilot workflows, voice-first summaries, route-aware task capture, and safety-first hands-free orchestration.
+
+Quick install from this repo checkout:
+
+```bash
+hermes profile install ./distributions/hermes-turbo-desktop --name hermes-turbo-desktop --alias
+hermes profile install ./distributions/hermes-turbo-car --name hermes-turbo-car --alias
+```
+
+More details: [docs/hermes-turbo-variants.md](docs/hermes-turbo-variants.md)
+
+## Why Hermes Turbo Agent
+
+| Need | Hermes Turbo Agent answer |
 | --- | --- |
 | Keep Hermes compatibility | Forks Hermes Agent instead of replacing its architecture. |
 | Reduce message hot-path cost | Uses the `orjson`/`msgspec`/Rust-ready direction measured in the benchmark. |
 | Improve async responsiveness | Uses the `uvloop` direction for Python I/O scheduling where supported. |
-| Tell a sharper product story | Adds Tota Agent branding, launch site, and benchmark visuals. |
+| Tell a sharper product story | Adds Hermes Turbo Agent branding, a cleaner landing page, and benchmark visuals. |
 | Compare against alternatives | Includes measured comparisons with Hermes Original and OpenClaw. |
 
 ## Install
@@ -104,8 +119,9 @@ See [docs/tota-hermes-daily-update.md](docs/tota-hermes-daily-update.md).
 
 ### Post-Benchmark Performance Patch
 
-Version `0.14.4` refreshes the Hermes core sync while keeping the Tota fork's
-performance and branding layer intact.
+Version `0.14.5` renames the fork to Hermes Turbo Agent, adds installable
+`desktop` and `car` profile distributions, and introduces `HERMES_TURBO_HOME`
+as the preferred home override while keeping Tota compatibility intact.
 
 Version `0.14.3` adds the installed-user self-update prompt. Tota now checks
 the latest GitHub Release on interactive agent startup and asks before running
