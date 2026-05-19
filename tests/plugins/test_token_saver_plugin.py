@@ -119,9 +119,13 @@ def test_token_saver_plugin_registers_transform_hooks(monkeypatch, tmp_path):
         encoding="utf-8",
     )
 
-    plugins_mod._plugin_manager = plugins_mod.PluginManager()
-    plugins_mod.discover_plugins(force=True)
+    original_manager = plugins_mod._plugin_manager
+    try:
+        plugins_mod._plugin_manager = plugins_mod.PluginManager()
+        plugins_mod.discover_plugins(force=True)
 
-    hooks = plugins_mod.get_plugin_manager()._hooks
-    assert "transform_terminal_output" in hooks
-    assert "transform_tool_result" in hooks
+        hooks = plugins_mod.get_plugin_manager()._hooks
+        assert "transform_terminal_output" in hooks
+        assert "transform_tool_result" in hooks
+    finally:
+        plugins_mod._plugin_manager = original_manager
