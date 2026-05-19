@@ -7,7 +7,7 @@
 <p align="center">
   <a href="hermes-turbo-agent.html"><img src="https://img.shields.io/badge/Site-hermes--turbo--agent.html-19D27F?style=for-the-badge" alt="Hermes Turbo Agent HTML site"></a>
   <a href="tota_agent_benchmark_report.pdf"><img src="https://img.shields.io/badge/Benchmark-PDF-FFE15A?style=for-the-badge" alt="Benchmark PDF"></a>
-  <a href="https://github.com/wesleysimplicio/tota-agent"><img src="https://img.shields.io/badge/Fork-wesleysimplicio%2Ftota--agent-32B7FF?style=for-the-badge&logo=github" alt="Hermes Turbo Agent fork"></a>
+  <a href="https://github.com/wesleysimplicio/hermes-turbo-agent"><img src="https://img.shields.io/badge/Fork-wesleysimplicio%2Fhermes--turbo--agent-32B7FF?style=for-the-badge&logo=github" alt="Hermes Turbo Agent fork"></a>
   <a href="https://x.com/wesleysimplic"><img src="https://img.shields.io/badge/X-@wesleysimplic-000000?style=for-the-badge&logo=x" alt="Wesley Simplicio on X"></a>
   <a href="https://github.com/NousResearch/hermes-agent"><img src="https://img.shields.io/badge/Upstream-Hermes%20Agent-FF5D6C?style=for-the-badge" alt="Hermes Agent upstream"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
@@ -65,8 +65,8 @@ More details: [docs/hermes-turbo-variants.md](docs/hermes-turbo-variants.md)
 ### From GitHub
 
 ```bash
-git clone https://github.com/wesleysimplicio/tota-agent.git
-cd tota-agent
+git clone https://github.com/wesleysimplicio/hermes-turbo-agent.git
+cd hermes-turbo-agent
 
 uv venv .venv --python 3.11
 source .venv/bin/activate
