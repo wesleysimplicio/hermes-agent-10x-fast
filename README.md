@@ -104,6 +104,9 @@ See [docs/tota-hermes-daily-update.md](docs/tota-hermes-daily-update.md).
 
 ### Post-Benchmark Performance Patch
 
+Version `0.14.4` refreshes the Hermes core sync while keeping the Tota fork's
+performance and branding layer intact.
+
 Version `0.14.3` adds the installed-user self-update prompt. Tota now checks
 the latest GitHub Release on interactive agent startup and asks before running
 the project update path, while keeping the daily Hermes sync routine for

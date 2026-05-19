@@ -5,6 +5,7 @@ without risk of circular imports.
 """
 
 import os
+from contextvars import ContextVar, Token
 from pathlib import Path
 
 
@@ -13,6 +14,33 @@ TOTA_HOME_ENV = "TOTA_HOME"
 LEGACY_HOME_ENV = "HERMES_HOME"
 
 _profile_fallback_warned: bool = False
+_UNSET = object()
+_HERMES_HOME_OVERRIDE: ContextVar[str | object] = ContextVar(
+    "_HERMES_HOME_OVERRIDE", default=_UNSET
+)
+
+
+def set_hermes_home_override(path: str | Path | None) -> Token:
+    """Set a context-local Hermes home override and return its reset token.
+
+    This is for in-process, per-task scoping.  It deliberately does not mutate
+    ``os.environ`` because that is shared by every thread in the process.
+    """
+    value: str | object = _UNSET if path is None else str(path)
+    return _HERMES_HOME_OVERRIDE.set(value)
+
+
+def reset_hermes_home_override(token: Token) -> None:
+    """Restore the previous context-local Hermes home override."""
+    _HERMES_HOME_OVERRIDE.reset(token)
+
+
+def get_hermes_home_override() -> str | None:
+    """Return the active context-local Hermes home override, if any."""
+    override = _HERMES_HOME_OVERRIDE.get()
+    if override is _UNSET or not override:
+        return None
+    return str(override)
 
 
 def _default_home() -> Path:
@@ -43,6 +71,10 @@ def get_hermes_home() -> Path:
     template in ``hermes_cli/gateway.py`` and the kanban dispatcher in
     ``hermes_cli/kanban_db.py``).  See https://github.com/NousResearch/hermes-agent/issues/18594.
     """
+    override = get_hermes_home_override()
+    if override:
+        return Path(override)
+
     val = _configured_home_env()
     if val:
         return Path(val)
@@ -195,7 +227,7 @@ def get_subprocess_home() -> str | None:
     Activation is directory-based: if the ``home/`` subdirectory doesn't
     exist, returns ``None`` and behavior is unchanged.
     """
-    hermes_home = _configured_home_env()
+    hermes_home = get_hermes_home_override() or _configured_home_env()
     if not hermes_home:
         return None
     profile_home = os.path.join(hermes_home, "home")
