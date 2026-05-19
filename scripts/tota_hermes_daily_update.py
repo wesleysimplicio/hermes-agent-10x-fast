@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Daily Tota Agent sync routine.
+"""Daily Hermes Turbo Agent sync routine.
 
-The routine keeps Tota Agent close to NousResearch/hermes-agent while preserving
-Tota-specific speed and branding work. It runs in an isolated checkout, creates
-a dated branch, runs the project's own update path, merges upstream Hermes, then
+The routine keeps Hermes Turbo Agent close to NousResearch/hermes-agent while
+preserving speed and branding work. It runs in an isolated checkout, creates a
+dated branch, runs the project's own update path, merges upstream Hermes, then
 validates before committing and pushing the sync branch.
 """
 
@@ -21,10 +21,10 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-ORIGIN_URL = "https://github.com/wesleysimplicio/tota-agent.git"
+ORIGIN_URL = "https://github.com/wesleysimplicio/hermes-turbo-agent.git"
 UPSTREAM_URL = "https://github.com/NousResearch/hermes-agent.git"
 DEFAULT_PYTHON = "3.14.5"
-STATE_DIR = Path.home() / ".local" / "state" / "tota-agent" / "hermes-sync"
+STATE_DIR = Path.home() / ".local" / "state" / "hermes-turbo-agent" / "hermes-sync"
 
 
 class StepError(RuntimeError):
@@ -88,7 +88,7 @@ def _write_report(report: dict[str, Any], state_dir: Path) -> None:
     latest_md = state_dir / "latest.md"
     latest_json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     lines = [
-        "# Tota Agent Daily Hermes Sync",
+        "# Hermes Turbo Agent Daily Hermes Sync",
         "",
         f"- Status: `{report['status']}`",
         f"- Started: `{report['started_at']}`",
@@ -213,7 +213,7 @@ def _run_validation(worktree: Path, skip_tests: bool) -> None:
 
 def _assert_tota_personality(worktree: Path) -> None:
     checks = {
-        "README.md": "Tota Agent",
+        "README.md": "Hermes Turbo Agent",
         "pyproject.toml": "msgspec",
         "hermes_constants.py": "TOTA_HOME",
         "agent/_fastjson.py": "orjson",
@@ -224,7 +224,7 @@ def _assert_tota_personality(worktree: Path) -> None:
         if not path.exists() or needle not in path.read_text(encoding="utf-8", errors="ignore"):
             missing.append(f"{rel_path}: missing {needle!r}")
     if missing:
-        raise StepError("Tota personalization checks failed:\n" + "\n".join(missing))
+        raise StepError("Hermes Turbo personalization checks failed:\n" + "\n".join(missing))
 
 
 def _commit_and_push(worktree: Path, branch: str, dry_run: bool) -> str:
@@ -234,14 +234,14 @@ def _commit_and_push(worktree: Path, branch: str, dry_run: bool) -> str:
     if dry_run:
         return "changes left uncommitted because --dry-run was used"
     _git(worktree, "add", "-A")
-    _git(worktree, "commit", "-m", f"chore: sync Tota Agent with Hermes upstream {time.strftime('%Y-%m-%d')}")
+    _git(worktree, "commit", "-m", f"chore: sync Hermes Turbo with Hermes upstream {time.strftime('%Y-%m-%d')}")
     _git(worktree, "push", "-u", "origin", branch)
     return "committed and pushed"
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--repo", default=str(REPO_ROOT), help="Tota Agent repository path")
+    parser.add_argument("--repo", default=str(REPO_ROOT), help="Hermes Turbo Agent repository path")
     parser.add_argument("--state-dir", default=str(STATE_DIR), help="State/report directory")
     parser.add_argument("--python-version", default=DEFAULT_PYTHON)
     parser.add_argument("--skip-tool-upgrade", action="store_true")
