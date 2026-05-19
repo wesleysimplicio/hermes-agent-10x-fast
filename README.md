@@ -103,6 +103,23 @@ The `fast` extra stays optional so the base install remains small. When present,
 Hermes Turbo Agent uses `orjson`, `msgspec`, `uvloop`, and the Rust extension with
 Python fallbacks for locked-down or source-only environments.
 
+### Token Saver and RTK Bridge
+
+Version `0.14.7` adds the first token-economy slice for autonomous loops:
+
+- `plugins/token_saver/` compacts noisy shell and tool output while preserving a
+  redacted raw evidence file for expansion when the agent needs the exact log.
+- Exact file reads stay raw by default so coding agents do not lose source
+  fidelity while reviewing files.
+- `HERMES_TOKEN_SAVER_MODE=off|safe|balanced|aggressive` controls compression,
+  with `safe` as the default.
+- `HERMES_TOKEN_SAVER_MIN_CHARS=1200` controls the minimum output size before
+  compaction starts.
+- RTK can still run globally as an external command-rewrite bridge, while the
+  native plugin keeps Hermes Turbo self-contained and testable.
+
+See [docs/hermes-token-saver.md](docs/hermes-token-saver.md).
+
 ### Daily Hermes Sync
 
 Hermes Turbo Agent can run a daily sync routine that updates the local environment,
@@ -113,9 +130,22 @@ keeps Hermes Turbo speed customizations under validation before pushing a dated 
 python3 scripts/install_tota_hermes_daily_update_launchd.py --hour 6 --minute 30
 ```
 
-See [docs/tota-hermes-daily-update.md](docs/tota-hermes-daily-update.md).
+For manual sync planning, run:
+
+```bash
+python scripts/sync_hermes_upstream.py --dry-run --report docs/hermes-upstream-sync-last-report.md
+python scripts/validate_hermes_sync_policy.py docs/hermes-upstream-sync-policy.yaml
+```
+
+See [docs/tota-hermes-daily-update.md](docs/tota-hermes-daily-update.md) and
+[docs/hermes-upstream-sync-policy.yaml](docs/hermes-upstream-sync-policy.yaml).
 
 ### Post-Benchmark Performance Patch
+
+Version `0.14.7` adds a native token-saver plugin, the first RTK-compatible
+token economy bridge, and a machine-readable upstream sync policy with a
+reporting engine for reapplying Hermes Turbo customizations after upstream
+Hermes updates.
 
 Version `0.14.6` cleans up the public identity after the rename: README,
 agent instructions, update prompts, skins, sync reports, and the HTML microsite

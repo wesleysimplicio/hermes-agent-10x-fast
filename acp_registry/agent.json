@@ -1,7 +1,7 @@
 {
   "id": "hermes-agent",
   "name": "Hermes Turbo Agent",
-  "version": "0.14.5",
+  "version": "0.14.7",
   "description": "Hermes Turbo Agent is the faster branded fork with desktop and car operator profiles, persistent memory, skills, and ACP integration.",
   "repository": "https://github.com/wesleysimplicio/hermes-turbo-agent",
   "website": "https://hermes-agent.nousresearch.com/docs/user-guide/features/acp",
@@ -9,7 +9,7 @@
   "license": "MIT",
   "distribution": {
     "uvx": {
-      "package": "hermes-agent[acp]==0.14.5",
+      "package": "hermes-agent[acp]==0.14.7",
       "args": ["hermes-turbo-acp"]
     }
   }
