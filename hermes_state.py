@@ -14,6 +14,7 @@ Key design decisions:
 - Session source tagging ('cli', 'telegram', 'discord', etc.) for filtering
 """
 
+import json
 import logging
 import os
 import random

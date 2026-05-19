@@ -24,6 +24,10 @@ can be tested, reviewed, and reapplied after upstream Hermes updates.
   classifies changed paths against the policy, and writes an auditable report.
 - **Global RTK compatibility:** RTK can remain installed as a global command
   bridge while this plugin provides the repo-native implementation.
+- **CI stabilization:** refreshed Hermes Turbo branding expectations, gateway
+  service isolation, runtime stream recovery, approval fallback compatibility,
+  Kanban diagnostic filtering, and process/stdin helpers so the GitHub test job
+  tracks the forked behavior instead of stale upstream assumptions.
 
 ## GitHub Tracking
 
@@ -39,4 +43,6 @@ can be tested, reviewed, and reapplied after upstream Hermes updates.
 - `python -m pytest tests/plugins/test_token_saver_plugin.py tests/hermes_cli/test_upstream_sync_policy.py tests/hermes_cli/test_hermes_upstream_sync.py -q`
 - `python scripts/validate_hermes_sync_policy.py docs/hermes-upstream-sync-policy.yaml`
 - `python -m ruff check plugins/token_saver scripts/validate_hermes_sync_policy.py scripts/sync_hermes_upstream.py tests/plugins/test_token_saver_plugin.py tests/hermes_cli/test_upstream_sync_policy.py tests/hermes_cli/test_hermes_upstream_sync.py hermes_cli/__init__.py`
+- `python -m pytest <41 focused CI-regression tests> -q`
+- `python -m ruff check agent/anthropic_adapter.py agent/conversation_loop.py cli.py hermes_cli/gateway.py hermes_state.py plugins/kanban/dashboard/plugin_api.py run_agent.py tools/approval.py tools/browser_tool.py tools/process_registry.py tools/send_message_tool.py tests/acp/test_registry_manifest.py tests/hermes_cli/test_skin_engine.py tests/test_hermes_logging.py tests/test_tota_brand_pass.py`
 - `taskflow run /Users/wesleysimplicio/Projetos/contribuicoes/hermes/tota-agent-main`

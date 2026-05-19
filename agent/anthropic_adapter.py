@@ -859,8 +859,8 @@ def read_claude_code_credentials() -> Optional[Dict[str, Any]]:
     """Read refreshable Claude Code OAuth credentials.
 
     Checks two sources in order:
-      1. ~/.claude/.credentials.json file
-      2. macOS Keychain (Darwin only) — "Claude Code-credentials" entry
+      1. macOS Keychain (Darwin only) — "Claude Code-credentials" entry
+      2. ~/.claude/.credentials.json file
 
     This intentionally excludes ~/.claude.json primaryApiKey. Opencode's
     subscription flow is OAuth/setup-token based with refreshable credentials,
@@ -869,7 +869,11 @@ def read_claude_code_credentials() -> Optional[Dict[str, Any]]:
 
     Returns dict with {accessToken, refreshToken?, expiresAt?} or None.
     """
-    # Prefer the home-scoped credentials file first. This keeps alternate
+    kc_creds = _read_claude_code_credentials_from_keychain()
+    if kc_creds:
+        return kc_creds
+
+    # Fall back to the home-scoped credentials file. This keeps alternate
     # home directories deterministic while still supporting the canonical
     # Claude Code file source.
     cred_path = Path.home() / ".claude" / ".credentials.json"
@@ -888,11 +892,6 @@ def read_claude_code_credentials() -> Optional[Dict[str, Any]]:
                     }
         except (json.JSONDecodeError, OSError, IOError) as e:
             logger.debug("Failed to read ~/.claude/.credentials.json: %s", e)
-
-    # Fall back to macOS Keychain (covers Claude Code >=2.1.114)
-    kc_creds = _read_claude_code_credentials_from_keychain()
-    if kc_creds:
-        return kc_creds
 
     return None
 

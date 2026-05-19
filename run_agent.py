@@ -1156,6 +1156,32 @@ def _qwen_portal_headers() -> dict:
     }
 
 
+class _StreamErrorEvent(Exception):
+    """Provider error surfaced from a Responses ``error`` SSE frame."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: Optional[str] = None,
+        param: Optional[str] = None,
+        status_code: Optional[int] = None,
+    ) -> None:
+        super().__init__(message)
+        self.message = message
+        self.code = code
+        self.param = param
+        self.status_code = status_code
+        self.body: Dict[str, Any] = {
+            "error": {
+                "message": message,
+                "code": code,
+                "param": param,
+                "type": "error",
+            }
+        }
+
+
 _TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER = (
     "[hermes-agent: tool call arguments were corrupted in this session and "
     "have been dropped to keep the conversation alive. See issue #15236.]"
@@ -3095,6 +3121,16 @@ class AIAgent:
             parts.append(f"{type(e).__name__}({msg})" if msg else type(e).__name__)
         return " <- ".join(parts) if parts else type(error).__name__
 
+    def _is_provider_stream_parse_error(self, error: BaseException) -> bool:
+        """Treat known provider-side stream parser ValueErrors as retryable."""
+        if getattr(self, "api_mode", None) != "anthropic_messages":
+            return False
+        if not isinstance(error, ValueError):
+            return False
+        if isinstance(error, (UnicodeEncodeError, json.JSONDecodeError)):
+            return False
+        return "expected ident at line" in str(error).strip().lower()
+
     def _log_stream_retry(
         self,
         *,
@@ -4385,6 +4421,7 @@ class AIAgent:
                         api_key=_parent_runtime.get("api_key") or None,
                         credential_pool=getattr(self, "_credential_pool", None),
                         parent_session_id=self.session_id,
+                        skip_memory=True,
                     )
                     review_agent._memory_write_origin = "background_review"
                     review_agent._memory_write_context = "background_review"
@@ -5119,6 +5156,12 @@ class AIAgent:
         """
         raw = str(error)
 
+        if (
+            isinstance(error, ValueError)
+            and "expected ident at line" in raw.lower()
+        ):
+            return f"Malformed provider streaming response: {raw[:300]}"
+
         # Cloudflare / proxy HTML pages: grab the <title> for a clean summary
         if "<!DOCTYPE" in raw or "<html" in raw:
             m = re.search(r"<title[^>]*>([^<]+)</title>", raw, re.IGNORECASE)
@@ -5150,6 +5193,8 @@ class AIAgent:
         return AIAgent._decorate_xai_entitlement_error(f"{prefix}{raw[:500]}")
 
     def _mask_api_key_for_logs(self, key: Optional[str]) -> Optional[str]:
+        if callable(key) and not isinstance(key, str):
+            return "<entra-id-bearer>"
         if not key:
             return None
         if len(key) <= 12:
@@ -7210,6 +7255,22 @@ class AIAgent:
                 if not event_type and isinstance(event, dict):
                     event_type = event.get("type")
 
+                if event_type == "error":
+                    err_message = getattr(event, "message", None)
+                    if not err_message and isinstance(event, dict):
+                        err_message = event.get("message")
+                    err_code = getattr(event, "code", None)
+                    if not err_code and isinstance(event, dict):
+                        err_code = event.get("code")
+                    err_param = getattr(event, "param", None)
+                    if not err_param and isinstance(event, dict):
+                        err_param = event.get("param")
+                    raise _StreamErrorEvent(
+                        (err_message or "stream emitted error event").strip(),
+                        code=err_code,
+                        param=err_param,
+                    )
+
                 # Collect output items and text deltas for backfill
                 if event_type == "response.output_item.done":
                     done_item = getattr(event, "item", None)
@@ -8427,6 +8488,7 @@ class AIAgent:
                         _is_conn_err = isinstance(
                             e, (_httpx.ConnectError, _httpx.RemoteProtocolError, ConnectionError)
                         )
+                        _is_provider_parse_err = self._is_provider_stream_parse_error(e)
 
                         # If the stream died AFTER some tokens were delivered:
                         # normally we don't retry (the user already saw text,
@@ -8564,7 +8626,7 @@ class AIAgent:
                                     for phrase in _SSE_CONN_PHRASES
                                 )
 
-                        if _is_timeout or _is_conn_err or _is_sse_conn_err:
+                        if _is_timeout or _is_conn_err or _is_sse_conn_err or _is_provider_parse_err:
                             # Transient network / timeout error. Retry the
                             # streaming request with a fresh connection first.
                             if _stream_attempt < _max_stream_retries:
@@ -9053,6 +9115,7 @@ class AIAgent:
         ``gateway/run.py``), so this restoration IS needed there too.
         """
         if not self._fallback_activated:
+            self._fallback_index = 0
             return False
 
         if getattr(self, "_rate_limited_until", 0) > time.monotonic():

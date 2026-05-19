@@ -949,8 +949,13 @@ def list_diagnostics(
         # Narrow by severity if asked.
         if severity:
             filtered: dict[str, list[dict]] = {}
+            def _matches_requested_severity(d: dict) -> bool:
+                current = d.get("severity")
+                if severity == "error":
+                    return current in {"error", "critical"}
+                return current == severity
             for tid, dl in diags_by_task.items():
-                keep = [d for d in dl if d.get("severity") == severity]
+                keep = [d for d in dl if _matches_requested_severity(d)]
                 if keep:
                     filtered[tid] = keep
             diags_by_task = filtered
