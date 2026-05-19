@@ -29,10 +29,10 @@ codebase can find the plan without leaving their editor.
 
 - ✅ #33 — Cherry-pick 180x faster `browser_console` (Hermes #23226) — landed via upstream merge `ab61ec254`.
 - ✅ #34 — Adopt upstream cold-start wave (~19s win) — landed via upstream merge `ab61ec254`.
-- ⏳ #35 — Phase 2 `msgspec.Struct` migration for `transports/types.py::ToolCall`. High-risk; needs dedicated PR.
-- ⏳ #36 — Phase 1.5 `run_agent.py` `orjson` migration. Needs per-site `strict=False` audit.
-- ⏳ #37 — Phase 1.5 `hermes_state.py` `orjson` migration + SQLite round-trip audit. Highest-risk; behind `TOTA_FAST_STATE=1` feature flag.
-- ⏳ #38 — Refresh `tota_agent_benchmark_report.pdf` post-merge. Needs runtime benchmarking environment.
+- 📋 #35 — Phase 2 `msgspec.Struct` migration for `transports/types.py::ToolCall` → `docs/adr/0006-msgspec-toolcall-migration.md` (Option A: compatibility shim).
+- 📋 #36 — Phase 1.5 `run_agent.py` `orjson` migration → `docs/adr/0004-run-agent-orjson-migration.md` (Tier A/B/C/D audit of 48 call sites).
+- 📋 #37 — Phase 1.5 `hermes_state.py` `orjson` migration → `docs/adr/0005-hermes-state-orjson-migration.md` (feature-flagged via `TOTA_FAST_STATE=1`).
+- 📋 #38 — Refresh `tota_agent_benchmark_report.pdf` → `docs/adr/0007-benchmark-refresh.md` (requires runtime + Playwright + Rust toolchain).
 
 ## Sprint 3 — Distribution + identity polish
 
@@ -42,7 +42,7 @@ codebase can find the plan without leaving their editor.
 - ✅ #42 — Adopt tiered install fallback (Hermes #24515) — landed via upstream merge.
 - ✅ #43 — Brand consistency pass (default + 4 neutral skins, CLI welcome banner, SOUL.md template).
 - ✅ #44 — `SOUL.md` override docs page (`docs/tota-identity-customization.md`).
-- ⏳ #45 — Native Windows beta integration test pass (40+ Windows fixes). Needs a Windows runner.
+- 📋 #45 — Native Windows beta integration test pass → `docs/adr/0008-native-windows-beta.md` (needs Windows CI runner).
 - ✅ #46 — `tota` / `tota-agent` / `tota-acp` `console_scripts` aliases added.
 
 ## Sprint 4 — Features, skills, nice-to-have
@@ -66,7 +66,8 @@ codebase can find the plan without leaving their editor.
 ## Status legend
 
 - ✅ — Closed (PR merged or doc shipped).
-- ⏳ — Open; tractable but not yet started in this session.
+- 📋 — Open with accepted plan ADR; ready for dedicated PR pickup.
+- ⏳ — Open; tractable but not yet planned.
 - 🚦 — Gating priority for the sprint (must land before other sprint items).
 
 ## Process notes
