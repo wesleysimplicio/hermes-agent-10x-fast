@@ -1,51 +1,39 @@
 {
   "browser_console": {
-    "binary": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    "reason": "Measured against a shared local headless Chrome instance via CDP.",
-    "status": "measured"
+    "binary": null,
+    "reason": "No local Chrome/Chromium binary is available on this host, so the browser_console p99 row cannot run.",
+    "status": "blocked"
   },
-  "generated_at": "2026-05-18 16:17:57 -0300",
-  "json_path": "/Users/wesleysimplicio/Projetos/contribuicoes/hermes/tota-agent/docs/tota-benchmark-hermes-0.14.0.json",
-  "local_python": "/Users/wesleysimplicio/Projetos/contribuicoes/hermes/tota-agent/.venv/bin/python",
-  "md_path": "/Users/wesleysimplicio/Projetos/contribuicoes/hermes/tota-agent/docs/tota-benchmark-hermes-0.14.0.md",
+  "generated_at": "2026-05-19 17:21:45 -0300",
+  "json_path": "C:\\Users\\wesley.simplicio\\Documents\\Codex\\2026-05-18\\termine-todas-as-issues-https-github-2\\hermes-turbo-agent\\docs\\tota-benchmark-hermes-0.14.0.json",
+  "local_python": "C:\\Users\\wesley.simplicio\\AppData\\Local\\Microsoft\\WindowsApps\\python.EXE",
+  "md_path": "C:\\Users\\wesley.simplicio\\Documents\\Codex\\2026-05-18\\termine-todas-as-issues-https-github-2\\hermes-turbo-agent\\docs\\tota-benchmark-hermes-0.14.0.md",
   "metrics": {
     "async_1000_task_ms": {
-      "local": 32.00658300011128,
+      "local": 166.51870001805946,
       "local_meta": {
         "uvloop_requested": true
       },
       "notes": "Tota run requested uvloop; stock stayed on default asyncio.",
-      "speedup": 1.4563279997874188,
-      "stock": 46.61208300058206,
+      "speedup": 1.0045778641298517,
+      "stock": 167.28100000182167,
       "stock_meta": {
         "uvloop_requested": false
       },
       "winner": "Tota Agent"
     },
     "browser_console_p99_ms": {
-      "local": 0.5624999994324753,
-      "local_meta": {
-        "iterations": 50,
-        "max": 0.5624999994324753,
-        "median": 0.3048959997613565,
-        "min": 0.2497080004104646
-      },
-      "notes": "Measures browser_console(expression) p99 over a shared headless Chrome CDP session.",
-      "speedup": 2.3791111137196768,
-      "stock": 1.3382500001171138,
-      "stock_meta": {
-        "iterations": 50,
-        "max": 1.3382500001171138,
-        "median": 0.5545619997064932,
-        "min": 0.43841700062330347
-      },
-      "winner": "Tota Agent"
+      "local": null,
+      "notes": "Benchmark blocked on local Chrome startup.",
+      "speedup": null,
+      "stock": null,
+      "winner": "Blocked"
     },
     "cold_start_ms": {
-      "local": 254.02762500016252,
+      "local": 2866.113400028553,
       "notes": "Fresh subprocess import of model_tools as a cold-start proxy.",
-      "speedup": 1.8091569135437136,
-      "stock": 459.5758340001339,
+      "speedup": 1.707651727925677,
+      "stock": 4894.323499989696,
       "winner": "Tota Agent"
     },
     "integration_breadth": {
@@ -56,38 +44,38 @@
       "winner": "Tie"
     },
     "json_dumps_short_us": {
-      "local": 0.28103749997778016,
+      "local": 9.773056665047383,
       "local_meta": {},
       "notes": "",
-      "speedup": 4.869145577008289,
-      "stock": 1.3684124999902754,
+      "speedup": 0.687485014167825,
+      "stock": 6.718829999833057,
       "stock_meta": {},
-      "winner": "Tota Agent"
+      "winner": "Hermes 0.14.0"
     },
     "token_estimate_batch_us": {
-      "local": 24.56138900015503,
+      "local": 109.35316665563732,
       "local_meta": {
-        "have_rust": true
+        "have_rust": false
       },
       "notes": "Tota uses estimate_messages_tokens; stock uses estimate_messages_tokens_rough.",
-      "speedup": 3.8269675627605717,
-      "stock": 93.99563899993761,
+      "speedup": 4.145957059954664,
+      "stock": 453.3735333243385,
       "stock_meta": {},
       "winner": "Tota Agent"
     },
     "tool_call_parse_us": {
-      "local": 0.9377875000306327,
+      "local": 6.651126667081068,
       "local_meta": {
-        "have_rust": true
+        "have_rust": false
       },
-      "notes": "Tota path uses the Rust parser.",
-      "speedup": 0.5650755990354975,
-      "stock": 0.5299208333478115,
+      "notes": "",
+      "speedup": 0.4112461147943097,
+      "stock": 2.7352500008419156,
       "stock_meta": {},
       "winner": "Hermes 0.14.0"
     }
   },
-  "stock_python": "temporary stock venv/bin/python",
+  "stock_python": "temporary stock venv\\Scripts\\python.exe",
   "stock_ref": "v2026.5.16",
   "stock_version": "0.14.0"
 }

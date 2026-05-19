@@ -101,6 +101,8 @@ def _write_report(report: dict[str, Any], state_dir: Path) -> None:
     ]
     for step in report.get("steps", []):
         lines.append(f"- {step}")
+    if report.get("pr_body_path"):
+        lines.extend(["", "## PR Body", "", f"- `{report['pr_body_path']}`"])
     if report.get("error"):
         lines.extend(["", "## Error", "", f"```text\n{report['error']}\n```"])
     latest_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -211,6 +213,34 @@ def _run_validation(worktree: Path, skip_tests: bool) -> None:
         _run([str(taskflow), "run", str(worktree)], cwd=worktree)
 
 
+def _run_benchmark_refresh(worktree: Path, state_dir: Path) -> Path:
+    python_bin = worktree / ".venv" / "bin" / "python"
+    _run([str(python_bin), "scripts/validate_sync_policy.py"], cwd=worktree)
+    _run([str(python_bin), "scripts/refresh_sync_benchmarks.py", "--python", str(python_bin)], cwd=worktree)
+    status_path = worktree / "docs" / "benchmark-refresh-status.json"
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    pr_body = state_dir / "latest_pr_body.md"
+    lines = [
+        "# Upstream Sync PR Body",
+        "",
+        f"- Generated: `{_now()}`",
+        f"- Worktree: `{worktree}`",
+        "",
+        "## Benchmark refresh",
+        "",
+        f"- Status: `{status['status']}`",
+        f"- Stale claims: `{status['stale']}`",
+        "",
+        "### Deltas",
+        "",
+    ]
+    lines.extend(status.get("delta_lines", []))
+    if status.get("error"):
+        lines.extend(["", "### Error", "", "```text", status["error"], "```"])
+    pr_body.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return pr_body
+
+
 def _assert_tota_personality(worktree: Path) -> None:
     checks = {
         "README.md": "Tota Agent",
@@ -277,6 +307,9 @@ def main() -> int:
         report["steps"].append("verified Tota identity and speed customizations are still present")
         _run_validation(worktree, skip_tests=args.skip_tests)
         report["steps"].append("ran focused validation and taskflow")
+        pr_body_path = _run_benchmark_refresh(worktree, state_dir)
+        report["steps"].append("validated sync policy and refreshed benchmark artifacts with stale marker support")
+        report["pr_body_path"] = str(pr_body_path)
         commit_status = _commit_and_push(worktree, branch, dry_run=args.dry_run)
         report["steps"].append(commit_status)
         report["status"] = "passed"

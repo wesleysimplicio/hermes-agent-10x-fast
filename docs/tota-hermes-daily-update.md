@@ -24,7 +24,11 @@ The routine:
 6. Verifies Tota-specific markers such as `TOTA_HOME`, `orjson`, `msgspec`,
    and the Tota README identity.
 7. Runs focused validation plus `taskflow run`.
-8. Commits and pushes a dated `codex/tota-hermes-daily-*` branch when all
+8. Validates `docs/hermes-turbo-sync-policy.json` with `scripts/validate_sync_policy.py`.
+9. Refreshes benchmark JSON first, then regenerates Markdown/PDF/cards with `scripts/refresh_sync_benchmarks.py`.
+10. Writes `docs/benchmark-refresh-status.{json,md}` and marks claims stale when refresh cannot complete.
+11. Stores a ready-to-paste PR body snippet with measured benchmark deltas in `latest_pr_body.md`.
+12. Commits and pushes a dated `codex/tota-hermes-daily-*` branch when all
    checks pass.
 
 If a merge conflict happens, the routine stops and writes the conflicted file

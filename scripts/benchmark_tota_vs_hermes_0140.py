@@ -33,12 +33,16 @@ import tomllib
 
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_LOCAL_PYTHON = ROOT / ".venv" / "bin" / "python"
+DEFAULT_LOCAL_PYTHON = ROOT / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 DEFAULT_OUTPUT_JSON = ROOT / "docs" / "tota-benchmark-hermes-0.14.0.json"
 DEFAULT_OUTPUT_MD = ROOT / "docs" / "tota-benchmark-hermes-0.14.0.md"
 UPSTREAM_REMOTE = "https://github.com/NousResearch/hermes-agent.git"
 UPSTREAM_REF = "v2026.5.16"
 EXPECTED_STOCK_VERSION = "0.14.0"
+
+
+def _venv_python(venv_root: Path) -> Path:
+    return venv_root / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 
 
 def _run(
@@ -159,7 +163,7 @@ def _bootstrap_stock_checkout(temp_root: Path, local_python: Path) -> tuple[Path
             f"upstream ref {UPSTREAM_REF} resolved to version {version}, expected {EXPECTED_STOCK_VERSION}"
         )
     _run([str(local_python), "-m", "venv", str(stock_venv)])
-    stock_python = stock_venv / "bin" / "python"
+    stock_python = _venv_python(stock_venv)
     _run([str(stock_python), "-m", "pip", "install", "--upgrade", "pip"])
     _run([str(stock_python), "-m", "pip", "install", "-e", str(stock_repo)])
     _run([str(stock_python), "-m", "pip", "install", "websockets", "aiohttp"])
@@ -478,7 +482,7 @@ def _build_markdown(report: dict[str, Any]) -> str:
             "## Commands",
             "",
             "```bash",
-            f".venv/bin/python scripts/benchmark_tota_vs_hermes_0140.py --output-json {report['json_path']} --output-md {report['md_path']}",
+            f"{report['local_python']} scripts/benchmark_tota_vs_hermes_0140.py --output-json {report['json_path']} --output-md {report['md_path']}",
             "```",
         ]
     )
@@ -613,7 +617,7 @@ def main() -> int:
             "stock_ref": UPSTREAM_REF,
             "stock_version": EXPECTED_STOCK_VERSION,
             "local_python": str(local_python),
-            "stock_python": "temporary stock venv/bin/python",
+            "stock_python": str(_venv_python(Path("temporary stock venv"))),
             "metrics": metrics,
             "browser_console": browser_status,
             "json_path": str(Path(args.output_json).resolve()),
