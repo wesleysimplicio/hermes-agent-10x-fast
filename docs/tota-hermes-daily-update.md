@@ -1,8 +1,8 @@
-# Tota Agent Daily Hermes Update
+# Hermes Turbo Agent Daily Hermes Update
 
-Tota Agent is a performance-focused fork of Hermes Agent. The daily update
-routine keeps the Hermes core fresh while preserving Tota's speed and branding
-customizations.
+Hermes Turbo Agent is the renamed performance-focused fork of Hermes Agent.
+The daily update routine keeps the Hermes core fresh while preserving the
+fork's speed, branding, and compatibility customizations.
 
 ## What Runs Daily
 

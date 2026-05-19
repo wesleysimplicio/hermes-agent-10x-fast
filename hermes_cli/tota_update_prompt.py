@@ -1,4 +1,4 @@
-"""Tota Agent self-update prompt.
+"""Hermes Turbo Agent self-update prompt.
 
 This module is intentionally small and dependency-free so installed users get
 release prompts without pulling extra packages into CLI startup.
@@ -18,8 +18,8 @@ from pathlib import Path
 from typing import Any
 
 
-TOTA_RELEASES_API = "https://api.github.com/repos/wesleysimplicio/tota-agent/releases/latest"
-TOTA_GIT_URL = "https://github.com/wesleysimplicio/tota-agent.git"
+TOTA_RELEASES_API = "https://api.github.com/repos/wesleysimplicio/hermes-turbo-agent/releases/latest"
+TOTA_GIT_URL = "https://github.com/wesleysimplicio/hermes-turbo-agent.git"
 PROMPT_CACHE_SECONDS = 24 * 3600
 CHECK_CACHE_SECONDS = 6 * 3600
 
@@ -162,7 +162,7 @@ def update_command_label() -> str:
 
 
 def maybe_prompt_for_tota_update() -> bool:
-    """Ask interactive users whether they want to update to a new Tota release.
+    """Ask interactive users whether they want to update to a new Hermes Turbo release.
 
     Returns True only when the prompt ran an update command successfully enough
     for the current process to exit and let the user restart.
@@ -181,27 +181,27 @@ def maybe_prompt_for_tota_update() -> bool:
     from hermes_cli import __version__
 
     print()
-    print(f"Tota Agent {tag} is available. You are running {__version__}.")
+    print(f"Hermes Turbo Agent {tag} is available. You are running {__version__}.")
     if release.get("html_url"):
         print(f"Release notes: {release['html_url']}")
     print(f"Update command: {update_command_label()}")
 
     try:
-        answer = input("Update Tota Agent now? [Y/n] ").strip().lower()
+        answer = input("Update Hermes Turbo Agent now? [Y/n] ").strip().lower()
     except (EOFError, KeyboardInterrupt):
         answer = "n"
 
     normalized = answer or "y"
     _record_prompt(tag, normalized)
     if normalized not in {"y", "yes"}:
-        print("Skipping update for now. Tota will remind you later.")
+        print("Skipping update for now. Hermes Turbo Agent will remind you later.")
         return False
 
     env = os.environ.copy()
     env["TOTA_SKIP_UPDATE_PROMPT"] = "1"
     result = subprocess.run(update_command(), env=env)
     if result.returncode == 0:
-        print("Tota Agent updated. Restart the command to use the new version.")
+        print("Hermes Turbo Agent updated. Restart the command to use the new version.")
         raise SystemExit(0)
-    print("Tota Agent update failed. Run the update command manually to inspect the error.")
+    print("Hermes Turbo Agent update failed. Run the update command manually to inspect the error.")
     return False
