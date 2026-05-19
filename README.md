@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/tota-brand/tota-agent-vs-openclaw-banner.png" alt="Tota Agent by Hermes Agent versus OpenClaw benchmark banner" width="100%">
+  <img src="docs/assets/hermes-turbo-brand/hermes-turbo-agent-banner.png" alt="Hermes Turbo Agent banner" width="100%">
 </p>
 
 # Hermes Turbo Agent
@@ -25,16 +25,14 @@ Legacy filenames, benchmark PDFs, and older docs may still reference `Tota Agent
 
 - [Hermes Turbo Agent site](hermes-turbo-agent.html)
 - [Legacy benchmark microsite](tota-agent.html)
-- [Tota vs OpenClaw launch banner PNG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.png)
-- [Tota vs OpenClaw launch banner SVG](docs/assets/tota-brand/tota-agent-vs-openclaw-banner.svg)
+- [Hermes Turbo banner PNG](docs/assets/hermes-turbo-brand/hermes-turbo-agent-banner.png)
 - [Benchmark battle cards](docs/assets/tota-benchmark/battles/)
 - [Hermes 0.14.0 side-by-side report](docs/tota-benchmark-hermes-0.14.0.md)
 - [Daily Hermes sync routine](docs/tota-hermes-daily-update.md)
 - [Updated benchmark PDF](tota_agent_benchmark_report.pdf) - May 18, 2026 edition with the Hermes 0.14.0 refresh, brand, site, visuals, and current `.venv` validation.
-- [SVG logo](docs/assets/tota-brand/tota-agent-logo.svg)
-- [PNG logo](docs/assets/tota-brand/tota-agent-logo.png)
-- [Open graph image](docs/assets/tota-brand/tota-agent-og.png)
-- [GPT-image-2 emblem source](docs/assets/tota-brand/generated/gpt-image-2-tota-agent-emblem.png)
+- [PNG logo](docs/assets/hermes-turbo-brand/hermes-turbo-agent-logo.png)
+- [Open graph image](docs/assets/hermes-turbo-brand/hermes-turbo-agent-og.png)
+- [Legacy Tota launch assets](docs/assets/tota-brand/)
 
 ## Variants
 
