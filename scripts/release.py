@@ -326,6 +326,7 @@ AUTHOR_MAP = {
     "web3blind@users.noreply.github.com": "web3blind",
     "julia@alexland.us": "alexg0bot",
     "christian@scheid.tech": "scheidti",
+    "chris.eth@qq.com": "duyua9",
     # Moonshot schema anyOf+enum salvage (May 2026)
     "git@local.invalid": "hendrixfreire",
     "1060770+benjaminsehl@users.noreply.github.com": "benjaminsehl",
